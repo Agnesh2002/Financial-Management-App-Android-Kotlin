@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "70345138309",
+    "project_id": "financial-assistant-587c1",
+    "storage_bucket": "financial-assistant-587c1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:70345138309:android:ee454439a19468f1de09ec",
+        "android_client_info": {
+          "package_name": "com.example.financialassistant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "70345138309-m2qiu4u43f593jl3n1ilqtv9m0f28b45.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBk2MkNujEx6xOFdllN-CdPxTofpfBPEvI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "70345138309-m2qiu4u43f593jl3n1ilqtv9m0f28b45.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,125 @@
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="lViewModel"
+            type="authentication.AuthenticationViewModel" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="authentication.RegistrationFragment">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    tools:context="authentication.LoginActivity">
+
+                    <EditText
+                        android:id="@+id/etUsername"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="32dp"
+                        android:layout_marginTop="140dp"
+                        android:layout_marginEnd="32dp"
+                        android:background="@drawable/custom_input"
+                        android:drawableStart="@drawable/ic_baseline_person_24"
+                        android:drawablePadding="10dp"
+                        android:ems="10"
+                        android:hint="Username"
+                        android:inputType="textPersonName"
+                        android:padding="20dp"
+                        android:text="@={lViewModel.etUsername}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <EditText
+                        android:id="@+id/etEmail"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/custom_input"
+                        android:drawableStart="@drawable/ic_baseline_email_24"
+                        android:drawablePadding="10dp"
+                        android:ems="10"
+                        android:hint="E-mail"
+                        android:inputType="textPersonName"
+                        android:padding="20dp"
+                        android:text="@={lViewModel.etEmail}"
+                        app:layout_constraintEnd_toEndOf="@+id/etUsername"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="@+id/etUsername"
+                        app:layout_constraintTop_toBottomOf="@+id/etUsername" />
+
+                    <EditText
+                        android:id="@+id/etPassword"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/custom_input"
+                        android:drawableStart="@drawable/ic_baseline_lock_24"
+                        android:drawablePadding="10dp"
+                        android:ems="10"
+                        android:hint="Password"
+                        android:inputType="textPersonName"
+                        android:padding="20dp"
+                        android:text="@={lViewModel.etPassword}"
+                        app:layout_constraintEnd_toEndOf="@+id/etEmail"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="@+id/etEmail"
+                        app:layout_constraintTop_toBottomOf="@+id/etEmail" />
+
+
+                    <EditText
+                        android:id="@+id/etConfirmPassword"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/custom_input"
+                        android:drawableStart="@drawable/ic_baseline_lock_24"
+                        android:drawablePadding="10dp"
+                        android:ems="10"
+                        android:hint="Confirm Password"
+                        android:inputType="textPersonName"
+                        android:padding="20dp"
+                        android:text="@={lViewModel.etConfirmPassword}"
+                        app:layout_constraintEnd_toEndOf="@+id/etPassword"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="@+id/etPassword"
+                        app:layout_constraintTop_toBottomOf="@+id/etPassword" />
+
+                    <Button
+                        android:id="@+id/btn_login"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="28dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/custom_button"
+                        android:onClick="@{()->lViewModel.register()}"
+                        android:text="register"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/etConfirmPassword"
+                        app:layout_constraintStart_toStartOf="@+id/etConfirmPassword"
+                        app:layout_constraintTop_toBottomOf="@+id/etConfirmPassword"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+        </ScrollView>
+
+    </FrameLayout>
+</layout>
