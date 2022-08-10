@@ -2,10 +2,10 @@ package authentication
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import repositories.AuthenticationRepository
 
@@ -15,61 +15,82 @@ class AuthenticationViewModel(application: Application) : AndroidViewModel(appli
     var etEmail = ""
     var etPassword = ""
     var etConfirmPassword = ""
-    private var _stateFlowMsg:MutableStateFlow<Int> = MutableStateFlow(0)
-    var stateFlowMsg = _stateFlowMsg.asStateFlow()
+    private val _stateFlowMsg:MutableStateFlow<Int> = MutableStateFlow(0)
+    val stateFlowMsg = _stateFlowMsg.asStateFlow()
     var errorMsg = "This field is required"
-    private var authenticationRepository = AuthenticationRepository()
+    private val authenticationRepository = AuthenticationRepository()
+    var pBarVisibility = MutableLiveData<Boolean>()
+    private val _sharedFlow = MutableSharedFlow<String>()
+    val sharedFlow = _sharedFlow.asSharedFlow()
 
-    private fun validate()
+    private fun validate(): Boolean
     {
         etUsername = etUsername.trim()
-        etEmail = etEmail.trim()
-        etPassword = etPassword.trim()
         etConfirmPassword = etConfirmPassword.trim()
-
-        validateEmailAndPassword()
 
         if(etUsername.isEmpty() || etUsername == "")
         {
             _stateFlowMsg.value = 1
-            return
+            return false
         }
+
+        if(!validateEmailAndPassword())
+            return false
 
         if(etConfirmPassword.isEmpty() || etConfirmPassword == "")
         {
             _stateFlowMsg.value = 4
-            return
+            return false
         }
+        return true
 
     }
 
-    private fun validateEmailAndPassword()
+    private fun validateEmailAndPassword(): Boolean
     {
+        etEmail = etEmail.trim()
+        etPassword = etPassword.trim()
+
         if(etEmail.isEmpty() || etEmail == "")
         {
             _stateFlowMsg.value = 2
-            return
+            return false
         }
         if(etPassword.isEmpty() || etPassword == "")
         {
             _stateFlowMsg.value = 3
-            return
+            return false
         }
+        return true
     }
 
     fun register()
     {
-        validate()
+        pBarVisibility.postValue(true)
+        if(!validate()) {
+            pBarVisibility.postValue(false)
+            return
+        }
+
         viewModelScope.launch(Dispatchers.IO) {
-            authenticationRepository.registerUser(getApplication(),etUsername, etEmail, etPassword)
+            authenticationRepository.registerUser(etUsername, etEmail, etPassword)
         }
     }
 
     fun login()
     {
-        validateEmailAndPassword()
+        pBarVisibility.postValue(true)
+        if(!validateEmailAndPassword()) {
+            pBarVisibility.postValue(false)
+            return
+        }
+
         viewModelScope.launch(Dispatchers.IO) {
-            authenticationRepository.loginUser(getApplication(),etEmail, etPassword)
+            authenticationRepository.loginUser(etEmail, etPassword)
+            authenticationRepository.stateFlow.collectLatest {
+                pBarVisibility.postValue(false)
+                _sharedFlow.emit(it)
+            }
         }
     }
 

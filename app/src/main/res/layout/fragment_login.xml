@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
+        <import type="android.view.View"/>
         <variable
             name="lViewModel"
             type="authentication.AuthenticationViewModel" />
@@ -30,14 +30,15 @@
                 android:drawableStart="@drawable/ic_baseline_email_24"
                 android:drawablePadding="10dp"
                 android:ems="10"
-                android:hint="E-mail"
-                android:inputType="textPersonName"
+                android:hint="@string/e_mail"
+                android:inputType="textEmailAddress"
                 android:padding="20dp"
                 android:text="@={lViewModel.etEmail}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="Autofill" />
 
             <EditText
                 android:id="@+id/etPassword"
@@ -48,21 +49,22 @@
                 android:drawableStart="@drawable/ic_baseline_lock_24"
                 android:drawablePadding="10dp"
                 android:ems="10"
-                android:hint="Password"
-                android:inputType="textPersonName"
+                android:hint="@string/password"
+                android:inputType="textPassword"
                 android:padding="20dp"
                 android:text="@={lViewModel.etPassword}"
                 app:layout_constraintEnd_toEndOf="@+id/etEmail"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/etEmail"
-                app:layout_constraintTop_toBottomOf="@+id/etEmail" />
+                app:layout_constraintTop_toBottomOf="@+id/etEmail"
+                tools:ignore="Autofill" />
 
             <CheckBox
                 android:id="@+id/checkBox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Remember Me"
+                android:text="@string/remember_me"
                 app:layout_constraintEnd_toEndOf="@+id/etPassword"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/etPassword"
@@ -75,7 +77,7 @@
                 android:layout_marginTop="64dp"
                 android:background="@drawable/custom_button"
                 android:onClick="@{()->lViewModel.login()}"
-                android:text="login"
+                android:text="@string/login"
                 app:layout_constraintEnd_toEndOf="@+id/etPassword"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="@+id/etPassword"
@@ -86,12 +88,39 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
-                android:layout_marginTop="32dp"
-                android:text="Register"
+                android:layout_marginBottom="32dp"
+                android:text="@string/do_not_have_an_account_click_here_to_register_now"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintHorizontal_bias="0.229"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btn_login" />
+                app:layout_constraintTop_toBottomOf="@+id/btn_login"
+                app:layout_constraintVertical_bias="0.877" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="80dp"
+                android:visibility="@{lViewModel.pBarVisibility?View.VISIBLE:View.INVISIBLE}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.498"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/etPassword" />
+
+            <ImageView
+                android:id="@+id/imgShow"
+                android:layout_width="27dp"
+                android:layout_height="26dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_baseline_remove_red_eye_24"
+                app:layout_constraintBottom_toBottomOf="@+id/etPassword"
+                app:layout_constraintEnd_toEndOf="@+id/etPassword"
+                app:layout_constraintHorizontal_bias="0.953"
+                app:layout_constraintStart_toStartOf="@+id/etPassword"
+                app:layout_constraintTop_toTopOf="@+id/etPassword"
+                tools:srcCompat="@drawable/ic_baseline_remove_red_eye_24" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

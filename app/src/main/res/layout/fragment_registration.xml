@@ -11,7 +11,8 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="authentication.RegistrationFragment">
+        tools:context="authentication.RegistrationFragment"
+        tools:ignore="Autofill">
 
         <ScrollView
             android:layout_width="match_parent"
@@ -38,7 +39,7 @@
                         android:drawableStart="@drawable/ic_baseline_person_24"
                         android:drawablePadding="10dp"
                         android:ems="10"
-                        android:hint="Username"
+                        android:hint="@string/username"
                         android:inputType="textPersonName"
                         android:padding="20dp"
                         android:text="@={lViewModel.etUsername}"
@@ -56,7 +57,7 @@
                         android:drawableStart="@drawable/ic_baseline_email_24"
                         android:drawablePadding="10dp"
                         android:ems="10"
-                        android:hint="E-mail"
+                        android:hint="@string/e_mail"
                         android:inputType="textPersonName"
                         android:padding="20dp"
                         android:text="@={lViewModel.etEmail}"
@@ -74,7 +75,7 @@
                         android:drawableStart="@drawable/ic_baseline_lock_24"
                         android:drawablePadding="10dp"
                         android:ems="10"
-                        android:hint="Password"
+                        android:hint="@string/password"
                         android:inputType="textPersonName"
                         android:padding="20dp"
                         android:text="@={lViewModel.etPassword}"
@@ -93,7 +94,7 @@
                         android:drawableStart="@drawable/ic_baseline_lock_24"
                         android:drawablePadding="10dp"
                         android:ems="10"
-                        android:hint="Confirm Password"
+                        android:hint="@string/confirm_password"
                         android:inputType="textPersonName"
                         android:padding="20dp"
                         android:text="@={lViewModel.etConfirmPassword}"
@@ -110,7 +111,7 @@
                         android:layout_marginBottom="20dp"
                         android:background="@drawable/custom_button"
                         android:onClick="@{()->lViewModel.register()}"
-                        android:text="register"
+                        android:text="@string/register"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="@+id/etConfirmPassword"
                         app:layout_constraintStart_toStartOf="@+id/etConfirmPassword"
