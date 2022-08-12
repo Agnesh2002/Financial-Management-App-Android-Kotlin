@@ -80,6 +80,8 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         binding.lViewModel = viewModel
         binding.lifecycleOwner = this
 
+        viewModel.loadData()
+
         binding.imgContacts.setOnClickListener {
 
             if (!hasContactPermission()) {
