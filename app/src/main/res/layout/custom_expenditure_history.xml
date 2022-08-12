@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -7,33 +8,61 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="3dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="2dp"
-        android:backgroundTint="#F6F6F5">
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="5dp"
+        android:backgroundTint="#FFF7F7"
+        app:cardCornerRadius="16dp">
+
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_marginStart="5dp"
+            android:orientation="vertical"
+            android:padding="10dp">
 
             <TextView
-                android:id="@+id/textView7"
-                android:layout_width="wrap_content"
+                android:id="@+id/custom_tv_expense_date"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_semibold"
-                android:text="Amount spent : "
-                android:textColor="#000000"
-                android:textSize="20sp" />
+                android:text="@string/C_date"
+                android:textColor="#3D40D6"/>
 
             <TextView
-                android:id="@+id/textView9"
+                android:id="@+id/custom_tv_mode_of_payment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins"
+                android:text="@string/C_mode_of_payment"
+                android:textColor="#000000" />
+
+            <TextView
+                android:id="@+id/custom_tv_payee"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_medium"
-                android:text="Payee name : "
+                android:text="@string/C_payee"
                 android:textColor="#000000" />
+
+            <TextView
+                android:id="@+id/custom_tv_pupose"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins"
+                android:text="@string/C_purpose"
+                android:textColor="#000000" />
+
+            <TextView
+                android:id="@+id/custom_tv_amount_spent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="@string/C_amount_spent"
+                android:textColor="#000000"
+                android:textSize="20sp" />
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>

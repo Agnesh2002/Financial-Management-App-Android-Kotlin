@@ -15,10 +15,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FinancialAssistant"
         tools:targetApi="31">
-        <activity android:name="main.HomeActivity"
+        <activity android:name="authentication.AuthenticationActivity"
             android:theme="@style/Theme.FinancialAssistant.NoActionBar"/>
+
         <activity
-            android:name="authentication.AuthenticationActivity"
+            android:name="main.HomeActivity"
+            android:theme="@style/Theme.FinancialAssistant.NoActionBar"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

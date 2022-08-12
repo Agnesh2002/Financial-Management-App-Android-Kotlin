@@ -38,11 +38,16 @@
     <string name="source">Source</string>
     <string name="add_to_current_balance">Add to current balance</string>
     <string name="in_hand">In Hand</string>
-    <string name="amount_withdrawed_from_bank">Amount withdrawed from bank</string>
+    <string name="amount_withdrawn_from_bank">Amount withdrawn from bank</string>
     <string name="amount_added_to_digital_wallet">Amount added to digital wallet</string>
     <string name="update_balance_in_hand">update balance in hand</string>
     <string name="in_total">In Total</string>
     <string name="amount_received_from_other_source">Amount received from other source</string>
+    <string name="C_date">Date : $d</string>
+    <string name="C_mode_of_payment">Mode of Payment :</string>
+    <string name="C_payee">Payee :</string>
+    <string name="C_purpose">Purpose :</string>
+    <string name="C_amount_spent">Amount spent :</string>
 
     <string-array name="array_currency_codes">
         <item>AED</item>

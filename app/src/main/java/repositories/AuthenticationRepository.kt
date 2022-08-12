@@ -9,13 +9,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.tasks.await
+import utils.Common
 import utils.UserData
 
 class AuthenticationRepository {
 
-    private val auth = FirebaseAuth.getInstance()
-    private val firestore = FirebaseFirestore.getInstance()
-    private val collRef = firestore.collection("USERS")
+    private val auth = Common.auth
+    private val collRef = Common.collRef
     private val _stateFlow = MutableStateFlow("")
     val stateFlow = _stateFlow.asStateFlow()
 
