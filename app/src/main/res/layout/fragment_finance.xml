@@ -102,7 +102,7 @@
                             android:visibility="gone">
 
                             <TextView
-                                android:id="@+id/textView3"
+                                android:id="@+id/tv_credit_card_expense"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/poppins_semibold"
@@ -214,7 +214,7 @@
                             android:visibility="gone">
 
                             <TextView
-                                android:id="@+id/textView5"
+                                android:id="@+id/tv_as_cash"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/poppins_semibold"
@@ -222,7 +222,7 @@
                                 android:textColor="#000000" />
 
                             <TextView
-                                android:id="@+id/textView6"
+                                android:id="@+id/tv_in_digital_wallet"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/poppins_medium"

@@ -1,6 +1,5 @@
 package finance
 
-import android.Manifest
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,18 +8,47 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.financialassistant.R
 import com.example.financialassistant.databinding.FragmentFinanceBinding
-import pub.devrel.easypermissions.AppSettingsDialog
-import pub.devrel.easypermissions.EasyPermissions
-import utils.Common.toastShort
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.launch
+import utils.Common
 
 class FinanceFragment : Fragment() {
 
     private lateinit var binding: FragmentFinanceBinding
+    private lateinit var viewModel: FinanceViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentFinanceBinding.inflate(layoutInflater)
+
+        viewModel = ViewModelProvider(this)[FinanceViewModel::class.java]
+
+        lifecycleScope.launch {
+            viewModel.loadFinanceData()
+        }
+
+        Common.setUpLogger()
+
+        lifecycleScope.launchWhenStarted {
+
+            viewModel.stateFlow
+                .filter {
+                    it.inBankData.size > 0
+                    it.inHandData.size > 0
+                }
+                .collectLatest {
+                    binding.tvCashInBank.text = it.inBankData[0]
+                    binding.tvCreditCardExpense.text = "Credit card expenditure : ${it.inBankData[1]}"
+                    binding.tvCashInHand.text = it.inHandData[0]
+                    binding.tvAsCash.text = "As cash : ${it.inHandData[1]}"
+                    binding.tvInDigitalWallet.text = "In digital wallet : ${it.inHandData[2]}"
+                    binding.tvCashInTotal.text = it.totalMoney
+                }
+        }
 
         binding.expandInBank.setOnClickListener {
             if(binding.expandableInBank.visibility == View.GONE)
@@ -60,6 +88,7 @@ class FinanceFragment : Fragment() {
             }
             override fun afterTextChanged(s: Editable?) {}
         })
+
 
 
         return binding.root
