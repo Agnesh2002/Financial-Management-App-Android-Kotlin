@@ -7,7 +7,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
+@SuppressLint("NewApi")
 object Common {
 
     val auth = FirebaseAuth.getInstance()
@@ -15,9 +18,20 @@ object Common {
     private val firestore = FirebaseFirestore.getInstance()
     val authEmail = auth.currentUser!!.email!!
     val collRef = firestore.collection("USERS")
-    val collRefFinance = collRef.document(auth.currentUser!!.email!!).collection("FINANCE")
+    private val collRefFinance = collRef.document(auth.currentUser!!.email!!).collection("FINANCE")
+
     val docRefExpenditures = collRefFinance.document("EXPENDITURES")
+    val docRefIncomes = collRefFinance.document("INCOMES")
+    val docRefWithdraws = collRefFinance.document("WITHDRAWS")
+    val docRefTransfers = collRefFinance.document("TRANSFERS")
     val docRefData = collRefFinance.document("DATA")
+
+    fun currentTime(): String
+    {
+        val current = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("HH:mm:ss")
+        return current.format(formatter)
+    }
 
     fun setUpLogger()
     {
@@ -36,7 +50,5 @@ object Common {
     {
         Toast.makeText(context.applicationContext,message,Toast.LENGTH_LONG).show()
     }
-
-
 
 }

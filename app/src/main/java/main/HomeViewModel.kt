@@ -22,15 +22,18 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     var purpose = ""
     var payee = ""
+    var amount = ""
+    var errMsg = ""
     private var paymentModeList = arrayListOf("Cash","Debit Card","Digital Wallet","Credit Card","Bank")
     var paymentModeAdapter = ArrayAdapter(getApplication(),android.R.layout.simple_list_item_1,paymentModeList)
-    var amount = ""
-    var dateText = MutableLiveData("Select Date")
-    private val _stateFlow = MutableStateFlow(0)
-    val stateFlow = _stateFlow.asStateFlow()
-    var errMsg = ""
     private val expenditureRepository = ExpenditureRepository()
     private val financeRepository = FinanceRepository()
+    private val _stateFlow = MutableStateFlow(0)
+    val stateFlow = _stateFlow.asStateFlow()
+    var dateText = MutableLiveData("Select Date")
+    val displayInWallet = MutableLiveData("₹0.0")
+    val displayInDigitalWallet = MutableLiveData("₹0.0")
+
     var cal: Calendar = Calendar.getInstance()
     val dateSetListener = DatePickerDialog.OnDateSetListener { _ , year, monthOfYear, dayOfMonth ->
         cal.set(Calendar.YEAR, year)
@@ -38,9 +41,11 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
         updateDateInView()
     }
-
-    val displayInWallet = MutableLiveData("₹0.0")
-    val displayInDigitalWallet = MutableLiveData("₹0.0")
+    private fun updateDateInView() {
+        val myFormat = "dd-MMM-yyyy" // mention the format you need
+        val sdf = SimpleDateFormat(myFormat, Locale.US)
+        dateText.value = sdf.format(cal.time)
+    }
 
     fun loadData()
     {
@@ -49,7 +54,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             displayInWallet.postValue("₹${financeRepository.amountInWallet}")
             displayInDigitalWallet.postValue("₹${financeRepository.amountInDigitalWallet} in your digital wallet")
         }
-
     }
 
     fun validate()
@@ -77,7 +81,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun makeExpense(paymentMode: String)
     {
         toastShort(getApplication(),"Expense noted")
@@ -85,36 +88,29 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
         if(paymentMode == "Bank" || paymentMode == "Debit Card")
         {
-            viewModelScope.launch {
+            viewModelScope.launch(Dispatchers.IO) {
                 expenditureRepository.deductFromBank(amount)
             }
         }
         if(paymentMode == "Cash")
         {
-            viewModelScope.launch {
+            viewModelScope.launch(Dispatchers.IO) {
                 expenditureRepository.deductFromHand(amount)
             }
         }
         if(paymentMode == "Digital Wallet")
         {
-            viewModelScope.launch {
+            viewModelScope.launch(Dispatchers.IO) {
                 expenditureRepository.deductFromDigitalWallet(amount)
             }
         }
         if(paymentMode == "Credit Card")
         {
-            viewModelScope.launch {
+            viewModelScope.launch(Dispatchers.IO) {
                 expenditureRepository.addToCreditCardExpense(amount)
             }
         }
 
     }
-
-    private fun updateDateInView() {
-        val myFormat = "dd-MMM-yyyy" // mention the format you need
-        val sdf = SimpleDateFormat(myFormat, Locale.US)
-        dateText.value = sdf.format(cal.time)
-    }
-
 
 }

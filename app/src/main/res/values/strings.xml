@@ -48,6 +48,9 @@
     <string name="C_payee">Payee :</string>
     <string name="C_purpose">Purpose :</string>
     <string name="C_amount_spent">Amount spent :</string>
+    <string name="setup">Setup</string>
+    <string name="other">Other</string>
+    <string name="setup_fragment">Setup Fragment</string>
 
     <string-array name="array_currency_codes">
         <item>AED</item>

@@ -3,18 +3,36 @@
     <group android:checkableBehavior="single">
         <item
             android:checked="true"
+            android:icon="@drawable/home_icon"
             android:id="@+id/nav_home"
             android:title="@string/home"/>
         <item
             android:id="@+id/nav_expenditure_history"
+            android:icon="@drawable/expenditure_history_icon"
             android:title="@string/expenditure_history"/>
         <item
             android:id="@+id/nav_exchange_rate"
+            android:icon="@drawable/conversion_icon"
             android:title="@string/exchange_rates"/>
         <item
             android:id="@+id/nav_finance"
+            android:icon="@drawable/finance_icon"
             android:title="@string/finance"/>
     </group>
+
+    <item
+        android:title="@string/other">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:icon="@drawable/setup"
+                    android:id="@+id/nav_setup"
+                    android:title="@string/setup"/>
+            </group>
+        </menu>
+    </item>
+
+
 
 
 </menu>

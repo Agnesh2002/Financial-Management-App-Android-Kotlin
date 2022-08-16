@@ -1,5 +1,7 @@
 package finance
 
+import android.app.DatePickerDialog
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -8,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.financialassistant.R
@@ -16,6 +19,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import utils.Common
+import java.util.*
 
 class FinanceFragment : Fragment() {
 
@@ -26,6 +30,8 @@ class FinanceFragment : Fragment() {
         binding = FragmentFinanceBinding.inflate(layoutInflater)
 
         viewModel = ViewModelProvider(this)[FinanceViewModel::class.java]
+        binding.lviewModel = viewModel
+        binding.lifecycleOwner = this
 
         lifecycleScope.launch {
             viewModel.loadFinanceData()
@@ -46,7 +52,7 @@ class FinanceFragment : Fragment() {
                     binding.tvCashInHand.text = it.inHandData[0]
                     binding.tvAsCash.text = "As cash : ${it.inHandData[1]}"
                     binding.tvInDigitalWallet.text = "In digital wallet : ${it.inHandData[2]}"
-                    binding.tvCashInTotal.text = it.totalMoney
+                    binding.tvCashInTotal.text = "₹ "+it.totalMoney
                 }
         }
 
@@ -89,6 +95,28 @@ class FinanceFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {}
         })
 
+        binding.tvSelectDateBankIncome.setOnClickListener {
+            DatePickerDialog(requireActivity(), viewModel.dateSetListener, viewModel.cal.get(Calendar.YEAR), viewModel.cal.get(Calendar.MONTH), viewModel.cal.get(Calendar.DAY_OF_MONTH)).show()
+        }
+        binding.btnAddToBankCurrentBalance.setOnClickListener {
+            viewModel.updateBankBalance(
+                binding.etBankUpdateAmount.text.toString(),
+                binding.etBankSourceOfUpdateAmount.text.toString(),
+                binding.etCreditCardExpenseUpdate.text.toString()
+            )
+        }
+
+        binding.tvSelectDateInHand.setOnClickListener {
+            DatePickerDialog(requireActivity(), viewModel.dateSetListener, viewModel.cal.get(Calendar.YEAR), viewModel.cal.get(Calendar.MONTH), viewModel.cal.get(Calendar.DAY_OF_MONTH)).show()
+        }
+        binding.btnUpdateBalanceInHand.setOnClickListener {
+            viewModel.updateBalanceInHand(
+                binding.etAmountWithdrawnFromBank.text.toString(),
+                binding.etAmountAddedToDigitalWallet.text.toString(),
+                binding.etAmountFromOtherSource.text.toString(),
+                binding.etIncomeOtherSource.text.toString()
+            )
+        }
 
 
         return binding.root

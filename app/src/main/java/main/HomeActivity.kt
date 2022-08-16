@@ -18,6 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import setup.SetupFragment
 import utils.Common.toastShort
 
 class HomeActivity : AppCompatActivity() {
@@ -39,6 +40,8 @@ class HomeActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         fragmentChange(HomeFragment())
 
+        binding.navView.itemIconTintList = null
+
         binding.navView.setNavigationItemSelectedListener {
             when(it.itemId)
             {
@@ -46,6 +49,7 @@ class HomeActivity : AppCompatActivity() {
                 R.id.nav_exchange_rate -> { fragmentChange(ExchangeRateFragment()) }
                 R.id.nav_expenditure_history -> { fragmentChange(ExpenditureHistoryFragment()) }
                 R.id.nav_finance -> { fragmentChange(FinanceFragment()) }
+                R.id.nav_setup -> { fragmentChange(SetupFragment()) }
             }
             true
         }

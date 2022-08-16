@@ -28,7 +28,6 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private lateinit var binding: FragmentHomeBinding
     private lateinit var viewModel: HomeViewModel
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("Range")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
 

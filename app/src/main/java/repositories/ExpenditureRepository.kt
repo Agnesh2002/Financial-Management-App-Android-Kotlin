@@ -13,15 +13,10 @@ class ExpenditureRepository {
 
     val listOfExpensesFromRepo = arrayListOf<String>()
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun logExpense(purpose: String, payee: String, paymentMode: String, date: String, amount: String)
     {
-        val current = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern("HH:mm:ss")
-        val formatted = current.format(formatter)
-
         val data = HashMap<String,Any>()
-        val fieldName = Common.authEmail.replace(".","_")+"$formatted-$date".lowercase()
+        val fieldName = Common.authEmail.replace(".","_")+"-${Common.currentTime()}-$date".lowercase()
         val expenditureArray = arrayListOf(fieldName, date, paymentMode, payee, purpose, amount)
         data[fieldName] = expenditureArray
         Common.docRefExpenditures.update(data)
@@ -37,7 +32,6 @@ class ExpenditureRepository {
         catch (e: FirebaseFirestoreException) {
             Logger.e(e.message.toString())
         }
-
     }
 
     suspend fun deductFromBank(amount: String)
