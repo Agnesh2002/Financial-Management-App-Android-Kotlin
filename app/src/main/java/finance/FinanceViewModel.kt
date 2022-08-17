@@ -1,11 +1,8 @@
 package finance
 
-import android.annotation.SuppressLint
 import android.app.Application
 import android.app.DatePickerDialog
-import android.os.Build
-import android.text.Editable
-import androidx.annotation.RequiresApi
+import android.widget.ArrayAdapter
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -29,6 +26,9 @@ class FinanceViewModel(application: Application) : AndroidViewModel(application)
     private var inBankData = ArrayList<String>()
     private var inHandData = ArrayList<String>()
     private var inTotal = ""
+    private val incomeModeList = arrayListOf("Received as cash","Received to digital wallet","Received to bank")
+    val spinnerAdapter = ArrayAdapter(getApplication(),android.R.layout.simple_list_item_1,incomeModeList)
+    var itemPosition = 0
     var dateText = MutableLiveData("Select Date")
 
     private val _stateFlow = MutableStateFlow(FinanceData(inBankData,inHandData,inTotal))
@@ -112,8 +112,7 @@ class FinanceViewModel(application: Application) : AndroidViewModel(application)
         {
             viewModelScope.launch(Dispatchers.IO) {
                 financeRepository.getInHandBalance()
-                financeRepository.updateBalanceCashInHand(dateText.value.toString(),amountFromOtherSource)
-                financeRepository.logIncome(dateText.value.toString(), amountFromOtherSource, incomeOtherSource)
+                financeRepository.updateOtherSourceIncome(dateText.value.toString(), amountFromOtherSource, incomeOtherSource, incomeModeList[itemPosition])
             }
         }
     }

@@ -29,11 +29,11 @@ class FinanceRepository {
 
     }
 
-    fun logIncome(date: String, amount: String, source: String)
+    fun logIncome(date: String, amount: String, source: String, incomeMode: String)
     {
         val data = HashMap<String,Any>()
         val fieldName = Common.authEmail.replace(".","_")+"-income-${Common.currentTime()}-$date".lowercase()
-        val incomeArray = arrayListOf(fieldName, date, amount, source)
+        val incomeArray = arrayListOf(fieldName, date, amount, source, incomeMode)
         data[fieldName] = incomeArray
         Common.docRefIncomes.update(data)
     }
@@ -43,7 +43,7 @@ class FinanceRepository {
         if(!(amount.isEmpty() || amount == "")) {
             amountInBank += amount.toDouble()
             Common.docRefData.update("in_bank",amountInBank.toString())
-            logIncome(date, amount, source)
+            logIncome(date, amount, source, "Received to bank")
         }
         if(!(creditCardExpenseUpdate.isEmpty() || creditCardExpenseUpdate=="")) {
             amountUsingCreditCard += creditCardExpenseUpdate.toDouble()
@@ -73,6 +73,28 @@ class FinanceRepository {
 
         amountInDigitalWallet += amount.toDouble()
         Common.docRefData.update("in_digital_wallet",amountInDigitalWallet.toString())
+    }
+
+    fun updateOtherSourceIncome(date: String, amount: String, source: String, incomeMode: String)
+    {
+        if(incomeMode == "Received as cash")
+        {
+            amountInWallet += amount.toDouble()
+            Common.docRefData.update("in_wallet",amountInWallet.toString())
+            logIncome(date, amount, source, incomeMode)
+        }
+        if(incomeMode == "Received to digital wallet")
+        {
+            amountInDigitalWallet += amount.toDouble()
+            Common.docRefData.update("in_digital_wallet",amountInDigitalWallet.toString())
+            logIncome(date, amount, source, incomeMode)
+        }
+        if(incomeMode == "Received to bank")
+        {
+            amountInBank += amount.toDouble()
+            Common.docRefData.update("in_bank",amountInBank.toString())
+            logIncome(date, amount, source, incomeMode)
+        }
     }
 
 }

@@ -10,6 +10,12 @@
             android:id="@+id/nav_expenditure_history"
             android:icon="@drawable/expenditure_history_icon"
             android:title="@string/expenditure_history"/>
+
+        <item
+            android:id="@+id/nav_income_history"
+            android:icon="@drawable/income_history_icon"
+            android:title="Income History"/>
+
         <item
             android:id="@+id/nav_exchange_rate"
             android:icon="@drawable/conversion_icon"

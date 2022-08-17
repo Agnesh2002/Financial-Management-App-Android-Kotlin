@@ -243,7 +243,7 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="10dp"
                             android:orientation="vertical"
-                            android:visibility="visible">
+                            android:visibility="gone">
 
                             <TextView
                                 android:id="@+id/tv_as_cash"
@@ -308,8 +308,42 @@
                                     android:id="@+id/et_income_other_source"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:hint="@string/source" />
+                                    android:hint="@string/note_eg_from_whom_and_for_what" />
                             </com.google.android.material.textfield.TextInputLayout>
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/spinner_c_layout"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginTop="2dp"
+                                android:visibility="gone">
+
+                                <Spinner
+                                    android:id="@+id/spinner_payment_mode_from_other_source"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="50dp"
+                                    android:adapter="@{lviewModel.spinnerAdapter}"
+                                    android:background="@drawable/custom_spinner"
+                                    android:selectedItemPosition="@={lviewModel.itemPosition}"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintHorizontal_bias="0.0"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintVertical_bias="0.0" />
+
+                                <ImageView
+                                    android:id="@+id/imageView9"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/ic_baseline_arrow_drop_down_24"
+                                    app:layout_constraintBottom_toBottomOf="@+id/spinner_payment_mode_from_other_source"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintHorizontal_bias="0.953"
+                                    app:layout_constraintStart_toStartOf="@+id/spinner_payment_mode_from_other_source"
+                                    app:layout_constraintTop_toTopOf="@+id/spinner_payment_mode_from_other_source"
+                                    app:layout_constraintVertical_bias="0.384" />
+                            </androidx.constraintlayout.widget.ConstraintLayout>
 
                             <TextView
                                 android:id="@+id/tv_select_date_in_hand"

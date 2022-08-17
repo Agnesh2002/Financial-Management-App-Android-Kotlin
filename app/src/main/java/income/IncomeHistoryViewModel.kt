@@ -1,59 +1,62 @@
-package expenditure
+package income
 
-import android.R
 import android.app.Application
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.TextView
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.recyclerview.widget.RecyclerView
+import com.example.financialassistant.R
+import com.orhanobut.logger.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import repositories.ExpenditureRepository
+import repositories.IncomeRepository
 
-
-class ExpenditureHistoryViewModel(application: Application) : AndroidViewModel(application) {
+class IncomeHistoryViewModel(application: Application) : AndroidViewModel(application) {
 
     private val arrayList = arrayListOf("Make a selection", "Latest first", "Oldest first", "Big amount first", "Small amount first")
-    val spinnerAdapter = ArrayAdapter(getApplication(), R.layout.simple_list_item_1, arrayList)
-    private val expenditureRepository = ExpenditureRepository()
+    val spinnerAdapter = ArrayAdapter(getApplication(), android.R.layout.simple_list_item_1, arrayList)
+    private val incomeRepository = IncomeRepository()
 
-    private var expenseListFromRepo = arrayListOf<String>()
-    private val dataAsObjectList = arrayListOf<ExpenseData>()
+    private val incomeListFromRepo = arrayListOf<String>()
+    private val dataAsObjectList = arrayListOf<IncomeData>()
 
-    private var sortedList = listOf<ExpenseData>()
-    private val finalDataList = arrayListOf<ExpenseData>()
-    var adapter = CustomExpenditureAdapter(finalDataList)
+    private var sortedList = listOf<IncomeData>()
+    private var finalDataList = arrayListOf<IncomeData>()
+    var adapter = CustomIncomeHistoryAdapter(finalDataList)
+
 
     fun getData()
     {
-        viewModelScope.launch(Dispatchers.IO){
-
-            expenditureRepository.getExpenseData()
-            expenseListFromRepo.clear()
-            for(expenseList in expenditureRepository.listOfExpenses)
+        viewModelScope.launch {
+            incomeRepository.getIncomeData()
+            incomeListFromRepo.clear()
+            for(expenseList in incomeRepository.listOfIncomes)
             {
                 val separated = expenseList.split("],")
                 for (expense in separated)
-                    expenseListFromRepo.add(expense)
+                    incomeListFromRepo.add(expense)
             }
             convertToListOfObjects()
         }
-
     }
 
     private fun convertToListOfObjects()
     {
         viewModelScope.launch(Dispatchers.Default) {
-            for(position in 0 until expenseListFromRepo.size)
+            for (position in 0 until incomeListFromRepo.size)
             {
-                val fields = expenseListFromRepo[position].replace("[","").replace("]","").split(",")
+                val fields = incomeListFromRepo[position].replace("[","").replace("]","").split(",")
                 val id = fields[0].trim()
                 val date = fields[1].trim()
-                val modeOfPayment = fields[2].trim()
-                val payee = fields[3].trim()
-                val purpose = fields[4].trim()
-                val amount = fields[5].trim().toDouble()
-                dataAsObjectList.add(ExpenseData(id, date, modeOfPayment, payee, purpose, amount))
+                val amount = fields[2].trim().toDouble()
+                val source = fields[3].trim()
+                val modeOfIncome = fields[4].trim()
+                dataAsObjectList.add(IncomeData(id,date,amount,source,modeOfIncome))
             }
         }
     }

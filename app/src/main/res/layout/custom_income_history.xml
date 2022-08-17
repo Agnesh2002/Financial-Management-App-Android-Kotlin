@@ -12,7 +12,7 @@
         android:layout_marginTop="5dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="5dp"
-        android:backgroundTint="#FFF7F7"
+        android:backgroundTint="#D4FAC7"
         app:cardCornerRadius="16dp">
 
 
@@ -24,45 +24,38 @@
             android:padding="10dp">
 
             <TextView
-                android:id="@+id/custom_tv_expense_date"
+                android:id="@+id/custom_tv_income_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_semibold"
-                android:text="@string/C_date"
-                android:textColor="#3D40D6"/>
+                android:text="Date : "
+                android:textColor="#3D40D6" />
 
             <TextView
-                android:id="@+id/custom_tv_mode_of_payment"
+                android:id="@+id/custom_tv_mode_of_income"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins"
-                android:text="@string/C_mode_of_payment"
-                android:textColor="#000000" />
+                android:text="@string/received_via"
+                android:textColor="#6A00FF" />
 
             <TextView
-                android:id="@+id/custom_tv_payee"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins_medium"
-                android:text="@string/C_payee"
-                android:textColor="#000000" />
-
-            <TextView
-                android:id="@+id/custom_tv_purpose"
+                android:id="@+id/custom_tv_source_of_income"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins"
-                android:text="@string/C_purpose"
+                android:text="@string/source"
                 android:textColor="#000000" />
 
+
             <TextView
-                android:id="@+id/custom_tv_amount_spent"
+                android:id="@+id/custom_tv_income_received"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_semibold"
-                android:text="@string/C_amount_spent"
+                android:text="@string/amount_received"
                 android:textColor="#000000"
-                android:textSize="20sp" />
+                android:textSize="16sp" />
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>

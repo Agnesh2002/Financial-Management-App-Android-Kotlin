@@ -37,7 +37,6 @@ class FinanceFragment : Fragment() {
             viewModel.loadFinanceData()
         }
 
-        Common.setUpLogger()
 
         lifecycleScope.launchWhenStarted {
 
@@ -83,6 +82,13 @@ class FinanceFragment : Fragment() {
             {
                 changeDrawable(binding.expandInHand,false)
                 binding.expandableInHand.visibility = View.GONE
+                binding.etAmountFromOtherSource.setText("")
+                binding.etParentIncomeOtherSource.visibility = View.GONE
+                binding.spinnerCLayout.visibility = View.GONE
+
+                binding.etAmountWithdrawnFromBank.visibility = View.VISIBLE
+                binding.etAmountAddedToDigitalWallet.visibility = View.VISIBLE
+                binding.etAmountFromOtherSource.visibility = View.VISIBLE
             }
 
         }
@@ -90,7 +96,32 @@ class FinanceFragment : Fragment() {
         binding.etAmountFromOtherSource.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                binding.etAmountWithdrawnFromBank.visibility = View.GONE
+                binding.etAmountAddedToDigitalWallet.visibility = View.GONE
                 binding.etParentIncomeOtherSource.visibility = View.VISIBLE
+                binding.spinnerCLayout.visibility = View.VISIBLE
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
+        binding.etAmountWithdrawnFromBank.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                binding.etAmountAddedToDigitalWallet.visibility = View.GONE
+                binding.etAmountFromOtherSource.visibility = View.GONE
+                binding.etParentIncomeOtherSource.visibility = View.GONE
+                binding.spinnerCLayout.visibility = View.GONE
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
+        binding.etAmountAddedToDigitalWallet.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                binding.etAmountWithdrawnFromBank.visibility = View.GONE
+                binding.etAmountFromOtherSource.visibility = View.GONE
+                binding.etParentIncomeOtherSource.visibility = View.GONE
+                binding.spinnerCLayout.visibility = View.GONE
             }
             override fun afterTextChanged(s: Editable?) {}
         })

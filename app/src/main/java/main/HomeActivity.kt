@@ -14,6 +14,7 @@ import com.example.financialassistant.databinding.ActivityHomeBinding
 import exchangerates.ExchangeRateFragment
 import expenditure.ExpenditureHistoryFragment
 import finance.FinanceFragment
+import income.IncomeHistoryFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -48,6 +49,7 @@ class HomeActivity : AppCompatActivity() {
                 R.id.nav_home -> { fragmentChange(HomeFragment()) }
                 R.id.nav_exchange_rate -> { fragmentChange(ExchangeRateFragment()) }
                 R.id.nav_expenditure_history -> { fragmentChange(ExpenditureHistoryFragment()) }
+                R.id.nav_income_history -> { fragmentChange(IncomeHistoryFragment()) }
                 R.id.nav_finance -> { fragmentChange(FinanceFragment()) }
                 R.id.nav_setup -> { fragmentChange(SetupFragment()) }
             }

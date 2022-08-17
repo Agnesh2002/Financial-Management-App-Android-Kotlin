@@ -51,6 +51,15 @@
     <string name="setup">Setup</string>
     <string name="other">Other</string>
     <string name="setup_fragment">Setup Fragment</string>
+    <string name="cash_in_wallet">Cash in wallet</string>
+    <string name="bank_balance">Bank balance</string>
+    <string name="credit_card_expenditure">Credit card expenditure</string>
+    <string name="amount_in_digital_wallet">Amount in digital wallet</string>
+    <string name="update">update</string>
+    <string name="received_via">Received via</string>
+    <string name="amount_received">Amount received :</string>
+    <string name="source_from">Source / From</string>
+    <string name="note_eg_from_whom_and_for_what">Note (eg: from whom and for what)</string>
 
     <string-array name="array_currency_codes">
         <item>AED</item>

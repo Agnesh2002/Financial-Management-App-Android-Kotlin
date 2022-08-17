@@ -1,26 +1,25 @@
-<layout>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
         <variable
             name="lViewModel"
-            type="expenditure.ExpenditureHistoryViewModel" />
+            type="income.IncomeHistoryViewModel" />
     </data>
 
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="expenditure.ExpenditureHistoryFragment">
+        tools:context="income.IncomeHistoryFragment">
 
-        <!-- TODO: Update blank fragment layout -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/expense_recycler_view"
+                android:id="@+id/recyler_view_incomes"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginStart="5dp"
@@ -29,29 +28,28 @@
                 android:layout_marginBottom="10dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.491"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.325"
-                tools:itemCount="19"
-                tools:listitem="@layout/custom_expenditure_history" />
+                tools:itemCount="7"
+                tools:listitem="@layout/custom_income_history" />
 
             <Spinner
-                android:id="@+id/spinner_sort_expense"
+                android:id="@+id/spinner_sort_income"
                 android:layout_width="0dp"
                 android:layout_height="40dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="30dp"
                 android:adapter="@{lViewModel.spinnerAdapter}"
                 android:background="@drawable/custom_spinner"
-                app:layout_constraintBottom_toBottomOf="@+id/textView31"
+                app:layout_constraintBottom_toBottomOf="@+id/textView3"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toEndOf="@+id/textView31"
-                app:layout_constraintTop_toTopOf="@+id/textView31" />
+                app:layout_constraintStart_toEndOf="@+id/textView3"
+                app:layout_constraintTop_toTopOf="@+id/textView3" />
 
             <TextView
-                android:id="@+id/textView31"
+                android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
@@ -70,14 +68,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_baseline_arrow_drop_down_24"
-                app:layout_constraintBottom_toBottomOf="@+id/spinner_sort_expense"
-                app:layout_constraintEnd_toEndOf="@+id/spinner_sort_expense"
+                app:layout_constraintBottom_toBottomOf="@+id/spinner_sort_income"
+                app:layout_constraintEnd_toEndOf="@+id/spinner_sort_income"
                 app:layout_constraintHorizontal_bias="0.96"
-                app:layout_constraintStart_toStartOf="@+id/spinner_sort_expense"
-                app:layout_constraintTop_toTopOf="@+id/spinner_sort_expense"
+                app:layout_constraintStart_toStartOf="@+id/spinner_sort_income"
+                app:layout_constraintTop_toTopOf="@+id/spinner_sort_income"
                 app:layout_constraintVertical_bias="0.375" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
-
     </FrameLayout>
 </layout>

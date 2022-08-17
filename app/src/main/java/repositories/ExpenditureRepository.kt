@@ -1,17 +1,14 @@
 package repositories
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.orhanobut.logger.Logger
 import kotlinx.coroutines.tasks.await
 import utils.Common
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+
 
 class ExpenditureRepository {
 
-    val listOfExpensesFromRepo = arrayListOf<String>()
+    val listOfExpenses = arrayListOf<String>()
 
     fun logExpense(purpose: String, payee: String, paymentMode: String, date: String, amount: String)
     {
@@ -27,7 +24,7 @@ class ExpenditureRepository {
         try {
             val result = Common.docRefExpenditures.get().await()
             for (expense in result.data!!.values)
-                listOfExpensesFromRepo.add(expense.toString())
+                listOfExpenses.add(expense.toString())
         }
         catch (e: FirebaseFirestoreException) {
             Logger.e(e.message.toString())
