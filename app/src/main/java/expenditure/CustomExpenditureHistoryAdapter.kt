@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.financialassistant.R
+import java.text.SimpleDateFormat
+import java.util.*
 
 class CustomExpenditureAdapter(private val expenseList: List<ExpenseData>) : RecyclerView.Adapter<MyViewHolder>()
 {
@@ -16,13 +18,14 @@ class CustomExpenditureAdapter(private val expenseList: List<ExpenseData>) : Rec
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
 
-        val date = expenseList[position].date
+        val sdf = SimpleDateFormat("dd-MMM-yyy", Locale.US)
+        val formattedDate = sdf.format(expenseList[position].date)
         val modeOfPayment = expenseList[position].modeOfExpense
         val payee = expenseList[position].payee
         val purpose = expenseList[position].purpose
         val amount = expenseList[position].amount.toString()
 
-        holder.tvDate.text = "Date : $date"
+        holder.tvDate.text = "Date : $formattedDate"
         holder.tvModeOfPayment.text = "Mode of Payment : $modeOfPayment"
         holder.tvPayee.text = "Payee : $payee"
         holder.tvPurpose.text = "Purpose : $purpose"

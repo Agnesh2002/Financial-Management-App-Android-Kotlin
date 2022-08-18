@@ -107,7 +107,8 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         binding.tvSelectDate.setOnClickListener {
             DatePickerDialog(requireActivity(),
                 viewModel.dateSetListener,
-                viewModel.cal.get(Calendar.YEAR), viewModel.cal.get(Calendar.MONTH), viewModel.cal.get(Calendar.DAY_OF_MONTH)).show()
+                viewModel.cal.get(Calendar.YEAR), viewModel.cal.get(Calendar.MONTH), viewModel.cal.get(Calendar.DAY_OF_MONTH)
+            ).show()
         }
 
 

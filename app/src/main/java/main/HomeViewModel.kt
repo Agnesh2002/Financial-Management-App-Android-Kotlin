@@ -84,7 +84,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     fun makeExpense(paymentMode: String)
     {
         toastShort(getApplication(),"Expense noted")
-        expenditureRepository.logExpense(purpose, payee, paymentMode, dateText.value.toString(), amount)
+        viewModelScope.launch(Dispatchers.IO) {
+            expenditureRepository.logExpense(purpose, payee, paymentMode, dateText.value.toString(), amount)
+        }
 
         if(paymentMode == "Bank" || paymentMode == "Debit Card")
         {

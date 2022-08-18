@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.financialassistant.R
+import java.text.SimpleDateFormat
+import java.util.*
 
 class CustomIncomeHistoryAdapter(private val incomeList: List<IncomeData>) : RecyclerView.Adapter<MyViewHolder>()
 {
@@ -16,12 +18,13 @@ class CustomIncomeHistoryAdapter(private val incomeList: List<IncomeData>) : Rec
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
 
-        val date = incomeList[position].date
+        val sdf = SimpleDateFormat("dd-MMM-yyyy", Locale.US)
+        val formattedDate = sdf.format(incomeList[position].date)
         val amount = incomeList[position].amount.toString()
         val source = incomeList[position].source
         val modeOfIncome = incomeList[position].mode
 
-        holder.date.text = "Date : $date"
+        holder.date.text = "Date : $formattedDate"
         holder.modeOfIncome.text = "( $modeOfIncome )"
         holder.source.text = "Note : $source"
         holder.amount.text = "Amount received : $amount"

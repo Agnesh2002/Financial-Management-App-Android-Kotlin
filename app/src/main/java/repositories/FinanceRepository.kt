@@ -1,7 +1,12 @@
 package repositories
 
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.orhanobut.logger.Logger
 import kotlinx.coroutines.tasks.await
 import utils.Common
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.HashMap
 
 class FinanceRepository {
 
@@ -9,6 +14,7 @@ class FinanceRepository {
     var amountInDigitalWallet = 0.0
     var amountInBank = 0.0
     var amountUsingCreditCard = 0.0
+    var listOfIncomes = arrayListOf<String>()
 
     suspend fun getInHandBalance()
     {
@@ -29,16 +35,20 @@ class FinanceRepository {
 
     }
 
-    fun logIncome(date: String, amount: String, source: String, incomeMode: String)
+    private suspend fun logIncome(date: String, amount: String, source: String, incomeMode: String)
     {
         val data = HashMap<String,Any>()
         val fieldName = Common.authEmail.replace(".","_")+"-income-${Common.currentTime()}-$date".lowercase()
         val incomeArray = arrayListOf(fieldName, date, amount, source, incomeMode)
         data[fieldName] = incomeArray
         Common.docRefIncomes.update(data)
+
+        val dateToMonthAndYear = date.split("-")
+        val monthAndYear = dateToMonthAndYear[1].trim()+"-"+dateToMonthAndYear[2].trim()
+        updateIncomeCount(monthAndYear, amount)
     }
 
-    fun updateBankBalance(date: String, amount: String, source: String, creditCardExpenseUpdate: String)
+    suspend fun updateBankBalance(date: String, amount: String, source: String, creditCardExpenseUpdate: String)
     {
         if(!(amount.isEmpty() || amount == "")) {
             amountInBank += amount.toDouble()
@@ -75,7 +85,7 @@ class FinanceRepository {
         Common.docRefData.update("in_digital_wallet",amountInDigitalWallet.toString())
     }
 
-    fun updateOtherSourceIncome(date: String, amount: String, source: String, incomeMode: String)
+    suspend fun updateOtherSourceIncome(date: String, amount: String, source: String, incomeMode: String)
     {
         if(incomeMode == "Received as cash")
         {
@@ -94,6 +104,55 @@ class FinanceRepository {
             amountInBank += amount.toDouble()
             Common.docRefData.update("in_bank",amountInBank.toString())
             logIncome(date, amount, source, incomeMode)
+        }
+    }
+
+    private suspend fun updateIncomeCount(date: String, newAmount: String)
+    {
+        var incomeCount = Common.docRefStatistics.get().await().getLong("income_count")!!
+        incomeCount += 1
+        Common.docRefStatistics.update("income_count",incomeCount)
+
+        val amountValue = Common.docRefStatistics.get().await().getLong("total_income_amount")!!
+        val incomeAmount = amountValue +  newAmount.toLong()
+        Common.docRefStatistics.update("total_income_amount",incomeAmount)
+
+        if(!Common.collRefMonthlyStatistics.document(date).get().await().exists())
+        {
+            val data = HashMap<String,Any>()
+            data["total_expenditure_amount"] = 0
+            data["expenditure_count"] = 0
+            data["total_income_amount"] = 0
+            data["income_count"] = 0
+            Common.collRefMonthlyStatistics.document(date).set(data)
+            updateMonthlyIncomeStatistics(date, newAmount)
+        }
+        else{
+            updateMonthlyIncomeStatistics(date, newAmount)
+        }
+    }
+
+    private suspend fun updateMonthlyIncomeStatistics(date: String, newAmount: String)
+    {
+        var monthlyIncomeCount = Common.collRefMonthlyStatistics.document(date).get().await().getLong("income_count")!!
+        monthlyIncomeCount += 1
+        Common.collRefMonthlyStatistics.document(date).update("income_count",monthlyIncomeCount)
+
+        val monthlyAmountValue = Common.collRefMonthlyStatistics.document(date).get().await().getLong("total_income_amount")!!
+        val monthlyIncomeAmount = monthlyAmountValue +  newAmount.toLong()
+        Common.collRefMonthlyStatistics.document(date).update("total_income_amount",monthlyIncomeAmount)
+    }
+
+    suspend fun getIncomeData()
+    {
+        try {
+            val result = Common.docRefIncomes.get().await()
+            for (expense in result.data!!.values)
+                listOfIncomes.add(expense.toString())
+        }
+        catch (e: FirebaseFirestoreException)
+        {
+            Logger.e(e.message.toString())
         }
     }
 

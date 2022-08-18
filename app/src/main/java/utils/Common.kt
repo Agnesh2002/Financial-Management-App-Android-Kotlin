@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
+import expenditure.ExpenseData
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -25,6 +26,8 @@ object Common {
     val docRefWithdraws = collRefFinance.document("WITHDRAWS")
     val docRefTransfers = collRefFinance.document("TRANSFERS")
     val docRefData = collRefFinance.document("DATA")
+    val docRefStatistics = collRefFinance.document("STATISTICS")
+    val collRefMonthlyStatistics = collRefFinance.document("STATISTICS").collection("MONTHLY")
 
     fun currentTime(): String
     {
