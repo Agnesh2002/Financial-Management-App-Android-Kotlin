@@ -23,6 +23,8 @@ class AuthenticationViewModel(application: Application) : AndroidViewModel(appli
     private val _sharedFlow = MutableSharedFlow<String>()
     val sharedFlow = _sharedFlow.asSharedFlow()
 
+    var checkBoxState = MutableStateFlow(false)
+
     private fun validate(): Boolean
     {
         etUsername = etUsername.trim()
@@ -87,10 +89,30 @@ class AuthenticationViewModel(application: Application) : AndroidViewModel(appli
 
         viewModelScope.launch(Dispatchers.IO) {
             authenticationRepository.loginUser(etEmail, etPassword)
-            authenticationRepository.stateFlow.collectLatest {
-                pBarVisibility.postValue(false)
-                _sharedFlow.emit(it)
-            }
+            startObserving()
+        }
+    }
+
+    fun performLogout() {
+        viewModelScope.launch(Dispatchers.IO) {
+            authenticationRepository.logoutUser(getApplication())
+            startObserving()
+        }
+    }
+
+    fun getUserInfo()
+    {
+        viewModelScope.launch(Dispatchers.IO) {
+            authenticationRepository.getDisplayInfo()
+            startObserving()
+        }
+    }
+
+    private suspend fun startObserving()
+    {
+        authenticationRepository.stateFlow.collectLatest {
+            pBarVisibility.postValue(false)
+            _sharedFlow.emit(it)
         }
     }
 

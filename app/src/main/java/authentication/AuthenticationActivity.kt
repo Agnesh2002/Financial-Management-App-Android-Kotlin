@@ -1,11 +1,17 @@
 package authentication
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.room.Room
 import com.example.financialassistant.R
-import utils.Common.setUpLogger
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import main.HomeActivity
+import utils.database.Database
 
 class AuthenticationActivity : AppCompatActivity() {
 
@@ -13,9 +19,21 @@ class AuthenticationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_authentication)
 
-        setUpLogger()
-        fragmentChange(LoginFragment())
-
+        lifecycleScope.launch(Dispatchers.IO) {
+            val db = Room.databaseBuilder(applicationContext, Database::class.java, "userdb").build()
+            val data = db.accessDao().getData()
+            if(data)
+            {
+                val intent = Intent(applicationContext, HomeActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY + Intent.FLAG_ACTIVITY_NEW_TASK
+                startActivity(intent)
+                finish()
+            }
+            else
+            {
+                fragmentChange(LoginFragment())
+            }
+        }
     }
 
     private fun fragmentChange(fragment: Fragment)

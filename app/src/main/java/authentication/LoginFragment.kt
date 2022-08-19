@@ -4,18 +4,22 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.room.Room
 import com.example.financialassistant.R
 import com.example.financialassistant.databinding.FragmentLoginBinding
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import main.HomeActivity
 import utils.Common.toastShort
+import utils.database.Database
+import utils.database.LoginData
 
 class LoginFragment : Fragment() {
 
@@ -45,6 +49,7 @@ class LoginFragment : Fragment() {
             }
         }
 
+
         lifecycleScope.launchWhenStarted {
             viewModel.stateFlowMsg.collectLatest {
                 when (it)
@@ -61,9 +66,15 @@ class LoginFragment : Fragment() {
                 toastShort(requireContext(), it)
                 if(it.contains("Welcome"))
                 {
-                    val i = Intent(requireContext(), HomeActivity::class.java)
-                    i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    startActivity(i)
+                    if(viewModel.checkBoxState.value)
+                    {
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            val db = Room.databaseBuilder(requireContext(), Database::class.java, "userdb").build()
+                            val loginObj =LoginData(1,true)
+                            db.accessDao().insertData(loginObj)
+                        }
+                    }
+                    navigateToHomeActivity()
                 }
             }
         }
@@ -80,6 +91,14 @@ class LoginFragment : Fragment() {
     private fun setCursorEnd()
     {
         binding.etPassword.setSelection(binding.etPassword.length())
+    }
+
+    private fun navigateToHomeActivity()
+    {
+        val i = Intent(requireActivity(), HomeActivity::class.java)
+        i.flags = Intent.FLAG_ACTIVITY_NO_HISTORY + Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(i)
+        this.activity?.finish()
     }
 
 

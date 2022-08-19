@@ -4,9 +4,6 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 import com.orhanobut.logger.Logger
 import kotlinx.coroutines.tasks.await
 import utils.Common
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.HashMap
 
 
 class ExpenditureRepository {
@@ -16,7 +13,7 @@ class ExpenditureRepository {
     suspend fun logExpense(purpose: String, payee: String, paymentMode: String, date: String, amount: String)
     {
         val data = HashMap<String,Any>()
-        val fieldName = Common.authEmail.replace(".","_")+"-${Common.currentTime()}-$date".lowercase()
+        val fieldName = Common.authEmail?.replace(".","_")+"-${Common.currentTime()}-$date".lowercase()
         val expenditureArray = arrayListOf(fieldName, date, paymentMode, payee, purpose, amount)
         data[fieldName] = expenditureArray
         Common.docRefExpenditures.update(data)

@@ -43,6 +43,7 @@ class ExpenditureHistoryFragment : Fragment() {
                 {
                     binding.tvFilterByExpense.visibility = View.VISIBLE
                     binding.tvSelectMonthFilterExpense.visibility = View.VISIBLE
+                    viewModel.clearView()
                 }
                 when(position)
                 {

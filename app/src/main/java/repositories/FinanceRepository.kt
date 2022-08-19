@@ -1,12 +1,10 @@
 package repositories
 
+import com.google.firebase.FirebaseException
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.orhanobut.logger.Logger
 import kotlinx.coroutines.tasks.await
 import utils.Common
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.HashMap
 
 class FinanceRepository {
 
@@ -18,11 +16,21 @@ class FinanceRepository {
 
     suspend fun getInHandBalance()
     {
-        val balInWallet = Common.docRefData.get().await().get("in_wallet")
-        amountInWallet = balInWallet!!.toString().toDouble()
+        try {
+            val balInWallet = Common.docRefData.get().await().get("in_wallet")
+            amountInWallet = balInWallet!!.toString().toDouble()
 
-        val balInDigitalWallet = Common.docRefData.get().await().get("in_digital_wallet")
-        amountInDigitalWallet = balInDigitalWallet!!.toString().toDouble()
+            val balInDigitalWallet = Common.docRefData.get().await().get("in_digital_wallet")
+            amountInDigitalWallet = balInDigitalWallet!!.toString().toDouble()
+        }
+        catch (e: FirebaseException)
+        {
+            Logger.e(e.message.toString())
+        }
+        catch (e: Exception)
+        {
+            Logger.e(e.message.toString())
+        }
     }
 
     suspend fun getInBankBalance()
@@ -38,7 +46,7 @@ class FinanceRepository {
     private suspend fun logIncome(date: String, amount: String, source: String, incomeMode: String)
     {
         val data = HashMap<String,Any>()
-        val fieldName = Common.authEmail.replace(".","_")+"-income-${Common.currentTime()}-$date".lowercase()
+        val fieldName = Common.authEmail?.replace(".","_")+"-income-${Common.currentTime()}-$date".lowercase()
         val incomeArray = arrayListOf(fieldName, date, amount, source, incomeMode)
         data[fieldName] = incomeArray
         Common.docRefIncomes.update(data)
@@ -64,7 +72,7 @@ class FinanceRepository {
     fun updateBalanceCashInHand(date: String, amount: String)
     {
         val data = HashMap<String,Any>()
-        val fieldName = Common.authEmail.replace(".","_")+"-withdraw-${Common.currentTime()}-$date".lowercase()
+        val fieldName = Common.authEmail?.replace(".","_")+"-withdraw-${Common.currentTime()}-$date".lowercase()
         val withdrawArray = arrayListOf(fieldName, date, amount)
         data[fieldName] = withdrawArray
         Common.docRefWithdraws.update(data)
@@ -76,7 +84,7 @@ class FinanceRepository {
     fun updateBalanceInDigitalWallet(date: String, amount: String)
     {
         val data = HashMap<String,Any>()
-        val fieldName = Common.authEmail.replace(".","_")+"-transfer-${Common.currentTime()}-$date".lowercase()
+        val fieldName = Common.authEmail?.replace(".","_")+"-transfer-${Common.currentTime()}-$date".lowercase()
         val transferArray = arrayListOf(fieldName, date, amount)
         data[fieldName] = transferArray
         Common.docRefTransfers.update(data)

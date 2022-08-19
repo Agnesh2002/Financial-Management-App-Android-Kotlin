@@ -1,17 +1,17 @@
 package income
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.app.DatePickerDialog
 import android.widget.ArrayAdapter
+import android.widget.DatePicker
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import repositories.FinanceRepository
-import utils.Common.toastShort
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -25,20 +25,25 @@ class IncomeHistoryViewModel(application: Application) : AndroidViewModel(applic
     private val dataAsObjectList = arrayListOf<IncomeData>()
 
     private var sortedList = listOf<IncomeData>()
-    var finalDataList = arrayListOf<IncomeData>()
+    private var finalDataList = arrayListOf<IncomeData>()
     var adapter = CustomIncomeHistoryAdapter(finalDataList)
 
     var dateText = MutableLiveData("Select Date")
     var radioGroupVisibility = MutableStateFlow(false)
     var cal: Calendar = Calendar.getInstance()
-    val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
+    @SuppressLint("NewApi")
+    val dateSetListener = DatePickerDialog.OnDateSetListener { callBack, year, monthOfYear, dayOfMonth ->
         cal.set(Calendar.YEAR, year)
         cal.set(Calendar.MONTH, monthOfYear)
         cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
         radioGroupVisibility.value = true
         updateDateInView()
+        callBack.setOnDateChangedListener { _, _, _, _ ->
+            clearView()
+        }
     }
-    var dateFormatChanged = false
+
+    private var dateFormatChanged = false
 
     private fun updateDateInView() {
         val myFormat = "dd-MMM-yyyy" // mention the format you need

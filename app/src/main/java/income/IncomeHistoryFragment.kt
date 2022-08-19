@@ -2,20 +2,15 @@ package income
 
 import android.app.DatePickerDialog
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.RadioButton
-import android.widget.RadioGroup
-import androidx.core.view.get
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.financialassistant.databinding.FragmentIncomeHistoryBinding
-import kotlinx.coroutines.flow.collectLatest
-import utils.Common
 import utils.Common.toastShort
 import java.util.*
 
@@ -34,7 +29,6 @@ class IncomeHistoryFragment : Fragment() {
         binding.recylerViewIncomes.layoutManager = LinearLayoutManager(requireContext())
         binding.recylerViewIncomes.adapter = viewModel.adapter
 
-        Common.setUpLogger()
         viewModel.getData()
 
         binding.spinnerSortIncome.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
@@ -49,6 +43,7 @@ class IncomeHistoryFragment : Fragment() {
                 {
                     binding.tvFilterByIncome.visibility = View.VISIBLE
                     binding.tvSelectMonthFilterIncome.visibility = View.VISIBLE
+                    viewModel.clearView()
                 }
                 when(position)
                 {

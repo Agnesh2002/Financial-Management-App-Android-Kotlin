@@ -2,9 +2,7 @@ package main
 
 import android.app.Application
 import android.app.DatePickerDialog
-import android.os.Build
 import android.widget.ArrayAdapter
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -12,8 +10,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import repositories.AuthenticationRepository
 import repositories.ExpenditureRepository
 import repositories.FinanceRepository
+import utils.Common
 import utils.Common.toastShort
 import java.text.SimpleDateFormat
 import java.util.*
@@ -46,6 +46,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         val sdf = SimpleDateFormat(myFormat, Locale.US)
         dateText.value = sdf.format(cal.time)
     }
+
 
     fun loadData()
     {

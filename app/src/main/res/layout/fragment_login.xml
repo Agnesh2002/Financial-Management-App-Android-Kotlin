@@ -65,6 +65,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@string/remember_me"
+                android:checked="@={lViewModel.checkBoxState}"
                 app:layout_constraintEnd_toEndOf="@+id/etPassword"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/etPassword"

@@ -1,8 +1,11 @@
 package expenditure
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.app.DatePickerDialog
+import android.os.Build
 import android.widget.ArrayAdapter
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -23,20 +26,24 @@ class ExpenditureHistoryViewModel(application: Application) : AndroidViewModel(a
     private val dataAsObjectList = arrayListOf<ExpenseData>()
 
     private var sortedList = listOf<ExpenseData>()
-    val finalDataList = arrayListOf<ExpenseData>()
+    private val finalDataList = arrayListOf<ExpenseData>()
     var adapter = CustomExpenditureAdapter(finalDataList)
 
     var dateText = MutableLiveData("Select Date")
     var radioGroupVisibility = MutableStateFlow(false)
     var cal: Calendar = Calendar.getInstance()
-    val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
+    @SuppressLint("NewApi")
+    val dateSetListener = DatePickerDialog.OnDateSetListener { callback, year, monthOfYear, dayOfMonth ->
         cal.set(Calendar.YEAR, year)
         cal.set(Calendar.MONTH, monthOfYear)
         cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
         radioGroupVisibility.value = true
         updateDateInView()
+        callback.setOnDateChangedListener { _, _, _, _ ->
+            clearView()
+        }
     }
-    var dateFormatChanged = false
+    private var dateFormatChanged = false
 
     private fun updateDateInView() {
         val myFormat = "dd-MMM-yyyy" // mention the format you need

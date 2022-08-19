@@ -4,10 +4,12 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
-import expenditure.ExpenseData
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -15,19 +17,21 @@ import java.time.format.DateTimeFormatter
 object Common {
 
     val auth = FirebaseAuth.getInstance()
-    @SuppressLint("StaticFieldLeak")
     private val firestore = FirebaseFirestore.getInstance()
-    val authEmail = auth.currentUser!!.email!!
-    val collRef = firestore.collection("USERS")
-    private val collRefFinance = collRef.document(auth.currentUser!!.email!!).collection("FINANCE")
+    var headerUname = ""
+    var headerEmail = ""
+    var firebaseUser: FirebaseUser? = auth.currentUser
+    var authEmail: String? = firebaseUser?.email
 
-    val docRefExpenditures = collRefFinance.document("EXPENDITURES")
-    val docRefIncomes = collRefFinance.document("INCOMES")
-    val docRefWithdraws = collRefFinance.document("WITHDRAWS")
-    val docRefTransfers = collRefFinance.document("TRANSFERS")
-    val docRefData = collRefFinance.document("DATA")
-    val docRefStatistics = collRefFinance.document("STATISTICS")
-    val collRefMonthlyStatistics = collRefFinance.document("STATISTICS").collection("MONTHLY")
+    val collRef = firestore.collection("USERS")
+
+    val docRefExpenditures: DocumentReference by lazy { collRef.document(authEmail.toString()).collection("FINANCE").document("EXPENDITURES") }
+    val docRefIncomes: DocumentReference by lazy { collRef.document(authEmail.toString()).collection("FINANCE").document("INCOMES") }
+    val docRefWithdraws: DocumentReference by lazy { collRef.document(authEmail.toString()).collection("FINANCE").document("WITHDRAWS") }
+    val docRefTransfers: DocumentReference by lazy { collRef.document(authEmail.toString()).collection("FINANCE").document("TRANSFERS") }
+    val docRefData: DocumentReference by lazy { collRef.document(authEmail.toString()).collection("FINANCE").document("DATA") }
+    val docRefStatistics: DocumentReference by lazy { collRef.document(authEmail.toString()).collection("FINANCE").document("STATISTICS") }
+    val collRefMonthlyStatistics:CollectionReference by lazy { collRef.document(authEmail.toString()).collection("FINANCE").document("STATISTICS").collection("MONTHLY") }
 
     fun currentTime(): String
     {

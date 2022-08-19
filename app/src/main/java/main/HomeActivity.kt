@@ -1,42 +1,61 @@
 package main
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import authentication.AuthenticationActivity
+import authentication.AuthenticationViewModel
 import com.example.financialassistant.R
 import com.example.financialassistant.databinding.ActivityHomeBinding
+import com.orhanobut.logger.Logger
 import exchangerates.ExchangeRateFragment
 import expenditure.ExpenditureHistoryFragment
 import finance.FinanceFragment
 import income.IncomeHistoryFragment
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import setup.SetupFragment
+import utils.Common
+import utils.Common.setUpLogger
 import utils.Common.toastShort
+
 
 class HomeActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityHomeBinding
-    lateinit var toggle: ActionBarDrawerToggle
+    private lateinit var toggle: ActionBarDrawerToggle
+    private lateinit var viewModel: AuthenticationViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        viewModel = ViewModelProvider(this)[AuthenticationViewModel::class.java]
 
         setSupportActionBar(binding.toolbar)
 
         toggle = ActionBarDrawerToggle(this, binding.navDrawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         binding.navDrawerLayout.addDrawerListener(toggle)
         toggle.syncState()
+
+        setUpLogger()
+        Logger.w(Common.headerUname+" : "+Common.headerEmail)
+        val headerLayout = binding.navView.inflateHeaderView(R.layout.nav_header)
+        val tvHeaderUsername: TextView = headerLayout.findViewById(R.id.header_tv_user_name)
+        val tvHeaderEmail: TextView = headerLayout.findViewById(R.id.header_tv_user_email)
+
+        viewModel.getUserInfo()
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         fragmentChange(HomeFragment())
@@ -52,8 +71,27 @@ class HomeActivity : AppCompatActivity() {
                 R.id.nav_income_history -> { fragmentChange(IncomeHistoryFragment()) }
                 R.id.nav_finance -> { fragmentChange(FinanceFragment()) }
                 R.id.nav_setup -> { fragmentChange(SetupFragment()) }
+                R.id.nav_logout -> { performLogout() }
             }
             true
+        }
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.sharedFlow.collectLatest {
+                if (it.contains("Welcome")) {
+                    toastShort(applicationContext, it)
+                    tvHeaderUsername.text = Common.headerUname
+                    tvHeaderEmail.text = Common.headerEmail
+                }
+                else
+                {
+                    toastShort(applicationContext, "$it.")
+                    val i = Intent(application.applicationContext, AuthenticationActivity::class.java)
+                    i.flags = Intent.FLAG_ACTIVITY_NO_HISTORY + Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(i)
+                    finish()
+                }
+            }
         }
 
     }
@@ -72,6 +110,28 @@ class HomeActivity : AppCompatActivity() {
             val transaction = supportFragmentManager.beginTransaction()
             transaction.replace(R.id.frame_home, fragment).commit()
         }
+    }
+
+    private fun performLogout() {
+
+        val builder = AlertDialog.Builder(this)
+        builder.setCancelable(false)
+        builder.setTitle("Logout")
+        builder.setMessage("Are you sure you want to logout ? ")
+        builder.setIcon(android.R.drawable.ic_dialog_alert)
+
+        builder.setPositiveButton("Yes") { _, _ ->
+            this.finish()
+            viewModel.performLogout()
+        }
+
+        builder.setNegativeButton("Cancel") { dialogInterface, _ ->
+            dialogInterface.dismiss()
+        }
+
+        val alertDialog: AlertDialog = builder.create()
+        alertDialog.show()
+
     }
 
 }
