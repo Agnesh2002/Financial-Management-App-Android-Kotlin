@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import repositories.ExpenditureRepository
+import utils.Common
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -20,7 +21,7 @@ class ExpenditureHistoryViewModel(application: Application) : AndroidViewModel(a
 
     private val arrayList = arrayListOf("Make a selection", "Latest first", "Oldest first", "Big amount first", "Small amount first")
     val spinnerAdapter = ArrayAdapter(getApplication(), android.R.layout.simple_list_item_1, arrayList)
-    private val expenditureRepository = ExpenditureRepository()
+    private val expenditureRepository = ExpenditureRepository(Common.auth.currentUser?.email!!)
 
     private var expenseListFromRepo = arrayListOf<String>()
     private val dataAsObjectList = arrayListOf<ExpenseData>()

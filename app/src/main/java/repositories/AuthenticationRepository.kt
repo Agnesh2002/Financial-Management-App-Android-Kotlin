@@ -5,15 +5,10 @@ import androidx.room.Room
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.orhanobut.logger.Logger
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.tasks.await
 import utils.Common
-import utils.Common.authEmail
-import utils.Common.firebaseUser
-import utils.Common.headerEmail
-import utils.Common.headerUname
 import utils.UserData
 import utils.database.Database
 
@@ -58,10 +53,9 @@ class AuthenticationRepository {
     suspend fun loginUser(email: String, password: String)
     {
         try {
-            auth.signInWithEmailAndPassword(email, password).await()
-            headerUname = collRef.document(email).get().await().getString("username").toString()
-            headerEmail = collRef.document(email).get().await().getString("email").toString()
-            checkFirebaseUser(headerUname)
+            val loginValue = auth.signInWithEmailAndPassword(email, password).await()
+            val uName = collRef.document(loginValue.user?.email.toString()).get().await().getString("username").toString()
+            _stateFlow.value = "Welcome $uName"
         }
         catch (e: FirebaseAuthException) {
             _stateFlow.value = e.message.toString()
@@ -69,32 +63,19 @@ class AuthenticationRepository {
         }
     }
 
-    private suspend fun checkFirebaseUser(uname: String)
+    suspend fun getUserInfo()
     {
-        if(auth.currentUser == null) {
-            delay(1000)
-            checkFirebaseUser(uname)
-        }
-        else
-        {
-            firebaseUser = auth.currentUser
-            authEmail = firebaseUser!!.email
-            getDisplayInfo()
-        }
+        Common.headerEmail = auth.currentUser?.email!!
+        Common.headerUname = collRef.document(Common.headerEmail).get().await().getString("username").toString()
+        _stateFlow.value = "fetched info"
     }
 
-     fun logoutUser(application: Application) {
+    fun logoutUser(application: Application) {
         auth.signOut()
         val db = Room.databaseBuilder(application.applicationContext,Database::class.java,"userdb").build()
         db.accessDao().deleteData()
         _stateFlow.value = "Logout successful"
     }
 
-    suspend fun getDisplayInfo()
-    {
-        headerUname = collRef.document(authEmail.toString()).get().await().getString("username").toString()
-        headerEmail = collRef.document(authEmail.toString()).get().await().getString("email").toString()
-        _stateFlow.value = "Welcome $headerUname"
-    }
 
 }

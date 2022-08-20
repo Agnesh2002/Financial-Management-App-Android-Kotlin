@@ -100,10 +100,10 @@ class AuthenticationViewModel(application: Application) : AndroidViewModel(appli
         }
     }
 
-    fun getUserInfo()
+    fun getDisplayInfo()
     {
         viewModelScope.launch(Dispatchers.IO) {
-            authenticationRepository.getDisplayInfo()
+            authenticationRepository.getUserInfo()
             startObserving()
         }
     }

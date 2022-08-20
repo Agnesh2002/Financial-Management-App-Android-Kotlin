@@ -14,6 +14,7 @@ import repositories.AuthenticationRepository
 import repositories.ExpenditureRepository
 import repositories.FinanceRepository
 import utils.Common
+import utils.Common.auth
 import utils.Common.toastShort
 import java.text.SimpleDateFormat
 import java.util.*
@@ -26,8 +27,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     var errMsg = ""
     private var paymentModeList = arrayListOf("Cash","Debit Card","Digital Wallet","Credit Card","Bank")
     var paymentModeAdapter = ArrayAdapter(getApplication(),android.R.layout.simple_list_item_1,paymentModeList)
-    private val expenditureRepository = ExpenditureRepository()
-    private val financeRepository = FinanceRepository()
+    private val expenditureRepository = ExpenditureRepository(auth.currentUser?.email!!)
+    private val financeRepository = FinanceRepository(auth.currentUser?.email!!)
     private val _stateFlow = MutableStateFlow(0)
     val stateFlow = _stateFlow.asStateFlow()
     var dateText = MutableLiveData("Select Date")

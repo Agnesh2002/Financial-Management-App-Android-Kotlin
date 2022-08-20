@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import repositories.FinanceRepository
+import utils.Common
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -19,7 +20,7 @@ class IncomeHistoryViewModel(application: Application) : AndroidViewModel(applic
 
     private val arrayList = arrayListOf("Make a selection", "Latest first", "Oldest first", "Big amount first", "Small amount first")
     val spinnerAdapter = ArrayAdapter(getApplication(), android.R.layout.simple_list_item_1, arrayList)
-    private val financeRepository = FinanceRepository()
+    private val financeRepository = FinanceRepository(Common.auth.currentUser?.email!!)
 
     private val incomeListFromRepo = arrayListOf<String>()
     private val dataAsObjectList = arrayListOf<IncomeData>()

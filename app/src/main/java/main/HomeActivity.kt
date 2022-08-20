@@ -49,13 +49,12 @@ class HomeActivity : AppCompatActivity() {
         binding.navDrawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
+        viewModel.getDisplayInfo()
+
         setUpLogger()
-        Logger.w(Common.headerUname+" : "+Common.headerEmail)
         val headerLayout = binding.navView.inflateHeaderView(R.layout.nav_header)
         val tvHeaderUsername: TextView = headerLayout.findViewById(R.id.header_tv_user_name)
         val tvHeaderEmail: TextView = headerLayout.findViewById(R.id.header_tv_user_email)
-
-        viewModel.getUserInfo()
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         fragmentChange(HomeFragment())
@@ -78,18 +77,20 @@ class HomeActivity : AppCompatActivity() {
 
         lifecycleScope.launchWhenStarted {
             viewModel.sharedFlow.collectLatest {
-                if (it.contains("Welcome")) {
-                    toastShort(applicationContext, it)
+                if (it.contains("Logout")) {
+                    val i = Intent(application.applicationContext, AuthenticationActivity::class.java)
+                    i.flags = Intent.FLAG_ACTIVITY_NO_HISTORY + Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(i)
+                    finish()
+                }
+                else if (it.contains("fetched"))
+                {
                     tvHeaderUsername.text = Common.headerUname
                     tvHeaderEmail.text = Common.headerEmail
                 }
                 else
                 {
                     toastShort(applicationContext, "$it.")
-                    val i = Intent(application.applicationContext, AuthenticationActivity::class.java)
-                    i.flags = Intent.FLAG_ACTIVITY_NO_HISTORY + Intent.FLAG_ACTIVITY_NEW_TASK
-                    startActivity(i)
-                    finish()
                 }
             }
         }

@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import repositories.ExpenditureRepository
 import repositories.FinanceRepository
+import utils.Common.auth
 import utils.Common.toastShort
 import utils.FinanceData
 import java.text.SimpleDateFormat
@@ -21,8 +22,8 @@ import kotlin.collections.ArrayList
 
 class FinanceViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val financeRepository = FinanceRepository()
-    private val expenditureRepository = ExpenditureRepository()
+    private val financeRepository = FinanceRepository(auth.currentUser?.email!!)
+    private val expenditureRepository = ExpenditureRepository(auth.currentUser?.email!!)
     private var inBankData = ArrayList<String>()
     private var inHandData = ArrayList<String>()
     private var inTotal = ""
