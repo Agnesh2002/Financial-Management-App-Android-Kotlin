@@ -76,6 +76,7 @@ class AuthenticationViewModel(application: Application) : AndroidViewModel(appli
 
         viewModelScope.launch(Dispatchers.IO) {
             authenticationRepository.registerUser(etUsername, etEmail, etPassword)
+            startObserving()
         }
     }
 

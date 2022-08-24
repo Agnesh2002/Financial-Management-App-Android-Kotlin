@@ -63,8 +63,9 @@
     <string name="filter_by">Filter By :</string>
     <string name="select_month">Select Month</string>
     <string name="sort_by">Sort By :</string>
-    <string name="record_of_whole_month">Record of whole month</string>
-    <string name="record_of_exact_date">Record of exact date</string>
+    <string name="record_of_whole_month">Show records of whole month</string>
+    <string name="record_of_exact_date">Show records of exact date</string>
+    <string name="statistics">Statistics</string>
 
     <string-array name="array_currency_codes">
         <item>AED</item>

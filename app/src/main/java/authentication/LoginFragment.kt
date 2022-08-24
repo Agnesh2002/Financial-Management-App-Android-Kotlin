@@ -63,7 +63,6 @@ class LoginFragment : Fragment() {
 
         lifecycleScope.launchWhenStarted {
             viewModel.sharedFlow.collectLatest {
-                toastShort(requireContext(), it)
                 if(it.contains("Welcome"))
                 {
                     if(viewModel.checkBoxState.value)
@@ -76,6 +75,7 @@ class LoginFragment : Fragment() {
                     }
                     navigateToHomeActivity()
                 }
+                toastShort(requireContext(), it)
             }
         }
 

@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import repositories.ExpenditureRepository
 import repositories.FinanceRepository
 import utils.Common.auth
@@ -31,9 +32,14 @@ class FinanceViewModel(application: Application) : AndroidViewModel(application)
     val spinnerAdapter = ArrayAdapter(getApplication(),android.R.layout.simple_list_item_1,incomeModeList)
     var itemPosition = 0
     var dateText = MutableLiveData("Select Date")
+    var pBarVisibility = MutableStateFlow(true)
 
     private val _stateFlow = MutableStateFlow(FinanceData(inBankData,inHandData,inTotal))
     val stateFlow = _stateFlow.asStateFlow()
+
+    private val _liveMsg = MutableStateFlow("")
+    val liveMsg = _liveMsg.asStateFlow()
+
 
     var cal: Calendar = Calendar.getInstance()
     val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
@@ -69,28 +75,45 @@ class FinanceViewModel(application: Application) : AndroidViewModel(application)
         job1.join()
 
         Logger.e(inBankData.toString() + inHandData.toString())
+
         val obj = FinanceData(inBankData,inHandData,inTotal)
         _stateFlow.emit(obj)
+        pBarVisibility.value = false
     }
 
     fun updateBankBalance(amount: String, source: String, creditCardExpenseUpdate: String)
     {
+        pBarVisibility.value = true
         if(dateText.value == "Select Date")
         {
             toastShort(getApplication(), "Please select a valid date")
+            pBarVisibility.value = false
             return
         }
-        viewModelScope.launch(Dispatchers.IO) {
-            financeRepository.getInBankBalance()
-            financeRepository.updateBankBalance(dateText.value.toString().trim(), amount.trim(), source.trim(), creditCardExpenseUpdate.trim())
+        if(!(amount.isEmpty() || amount == ""))
+        {
+            viewModelScope.launch(Dispatchers.IO) {
+                financeRepository.getInBankBalance()
+                financeRepository.updateBankBalance(dateText.value.toString().trim(), amount.trim(), source.trim(), creditCardExpenseUpdate.trim())
+                _liveMsg.emit("${amount.trim()} has been added to bank balance. Bank balance has been updated")
+                pBarVisibility.value = false
+            }
+        }
+        else
+        {
+            toastShort(getApplication(), "Please make sure that you have filled in appropriate details to update the bank record")
+            pBarVisibility.value = false
+            return
         }
     }
 
     fun updateBalanceInHand(amountWithdrawnFromBank: String, amountAddedToDigitalWallet: String, amountFromOtherSource: String, incomeOtherSource: String)
     {
+        pBarVisibility.value = true
         if(dateText.value == "Select Date")
         {
             toastShort(getApplication(), "Please select a valid date")
+            pBarVisibility.value = false
             return
         }
         if(!(amountWithdrawnFromBank.isEmpty() || amountWithdrawnFromBank == ""))
@@ -99,6 +122,8 @@ class FinanceViewModel(application: Application) : AndroidViewModel(application)
                 expenditureRepository.deductFromBank(amountWithdrawnFromBank)
                 financeRepository.getInHandBalance()
                 financeRepository.updateBalanceCashInHand(dateText.value.toString(),amountWithdrawnFromBank)
+                _liveMsg.emit("${amountWithdrawnFromBank.trim()} withdrawal from bank has been noted. In Hand balance has been updated")
+                pBarVisibility.value = false
             }
         }
         if(!(amountAddedToDigitalWallet.isEmpty() || amountAddedToDigitalWallet == ""))
@@ -107,6 +132,8 @@ class FinanceViewModel(application: Application) : AndroidViewModel(application)
                 expenditureRepository.deductFromBank(amountAddedToDigitalWallet)
                 financeRepository.getInHandBalance()
                 financeRepository.updateBalanceInDigitalWallet(dateText.value.toString(), amountAddedToDigitalWallet)
+                _liveMsg.emit("${amountAddedToDigitalWallet.trim()} addition to your digital wallet has been noted. Balance has been updated")
+                pBarVisibility.value = false
             }
         }
         if(!(amountFromOtherSource.isEmpty() || amountFromOtherSource == ""))
@@ -114,6 +141,8 @@ class FinanceViewModel(application: Application) : AndroidViewModel(application)
             viewModelScope.launch(Dispatchers.IO) {
                 financeRepository.getInHandBalance()
                 financeRepository.updateOtherSourceIncome(dateText.value.toString(), amountFromOtherSource, incomeOtherSource, incomeModeList[itemPosition])
+                _liveMsg.emit("${amountFromOtherSource.trim()} from ${incomeOtherSource.trim()} has been noted. Balance has been updated")
+                pBarVisibility.value = false
             }
         }
     }

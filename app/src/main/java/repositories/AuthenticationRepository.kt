@@ -31,10 +31,17 @@ class AuthenticationRepository {
             data["in_bank"] = "0"
             data["in_digital_wallet"] = "0"
             data["in_wallet"] = "0"
-            collRef.document(email).collection("FINANCE").document("DATA").set(data)
+
+            val statData = HashMap<String,Any>()
+            statData["expenditure_count"] = 0
+            statData["income_count"] = 0
+            statData["total_expenditure_amount"] = 0
+            statData["total_income_amount"] = 0
+
+            collRef.document(email).collection("FINANCE").document("DATA").set(data).await()
             collRef.document(email).collection("FINANCE").document("EXPENDITURES")
             collRef.document(email).collection("FINANCE").document("INCOMES")
-            collRef.document(email).collection("FINANCE").document("STATISTICS")
+            collRef.document(email).collection("FINANCE").document("STATISTICS").set(statData).await()
             collRef.document(email).collection("FINANCE").document("TRANSFERS")
             collRef.document(email).collection("FINANCE").document("WITHDRAWS")
             _stateFlow.value = "User has been registered successfully"
@@ -67,7 +74,7 @@ class AuthenticationRepository {
     {
         Common.headerEmail = auth.currentUser?.email!!
         Common.headerUname = collRef.document(Common.headerEmail).get().await().getString("username").toString()
-        _stateFlow.value = "fetched info"
+        _stateFlow.value = "Hi, ${Common.headerUname}"
     }
 
     fun logoutUser(application: Application) {

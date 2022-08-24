@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import setup.SetupFragment
+import statistics.StatisticsFragment
 import utils.Common
 import utils.Common.setUpLogger
 import utils.Common.toastShort
@@ -69,6 +70,7 @@ class HomeActivity : AppCompatActivity() {
                 R.id.nav_expenditure_history -> { fragmentChange(ExpenditureHistoryFragment()) }
                 R.id.nav_income_history -> { fragmentChange(IncomeHistoryFragment()) }
                 R.id.nav_finance -> { fragmentChange(FinanceFragment()) }
+                R.id.nav_statistics -> { fragmentChange(StatisticsFragment()) }
                 R.id.nav_setup -> { fragmentChange(SetupFragment()) }
                 R.id.nav_logout -> { performLogout() }
             }
@@ -83,10 +85,12 @@ class HomeActivity : AppCompatActivity() {
                     startActivity(i)
                     finish()
                 }
-                else if (it.contains("fetched"))
+                else if (it.contains("Hi"))
                 {
                     tvHeaderUsername.text = Common.headerUname
                     tvHeaderEmail.text = Common.headerEmail
+                    delay(2000)
+                    toastShort(applicationContext, "$it.")
                 }
                 else
                 {
@@ -104,7 +108,6 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun fragmentChange(fragment: Fragment) {
-
         lifecycleScope.launch {
             binding.navDrawerLayout.closeDrawer(GravityCompat.START)
             delay(350)

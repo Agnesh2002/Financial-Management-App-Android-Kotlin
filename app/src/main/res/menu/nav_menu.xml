@@ -24,6 +24,12 @@
             android:id="@+id/nav_finance"
             android:icon="@drawable/finance_icon"
             android:title="@string/finance"/>
+
+        <item
+            android:id="@+id/nav_statistics"
+            android:icon="@drawable/statistics_icon"
+            android:title="@string/statistics"/>
+
     </group>
 
     <item

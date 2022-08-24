@@ -77,8 +77,8 @@ class IncomeHistoryFragment : Fragment() {
             val radioBtn: RadioButton? = group.findViewById(checkedId)
             when (radioBtn?.text.toString())
             {
-                "Record of exact date" -> { viewModel.filterByExactDate() }
-                "Record of whole month" -> { viewModel.filterByMonth() }
+                "Show records of exact date" -> { viewModel.filterByExactDate() }
+                "Show records of whole month" -> { viewModel.filterByMonth() }
             }
         }
 

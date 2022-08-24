@@ -34,6 +34,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     var dateText = MutableLiveData("Select Date")
     val displayInWallet = MutableLiveData("₹0.0")
     val displayInDigitalWallet = MutableLiveData("₹0.0")
+    var pBarVisibility = MutableStateFlow(true)
+    var liveMsg = MutableStateFlow("")
 
     var cal: Calendar = Calendar.getInstance()
     val dateSetListener = DatePickerDialog.OnDateSetListener { _ , year, monthOfYear, dayOfMonth ->
@@ -48,13 +50,13 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         dateText.value = sdf.format(cal.time)
     }
 
-
     fun loadData()
     {
         viewModelScope.launch(Dispatchers.IO) {
             financeRepository.getInHandBalance()
             displayInWallet.postValue("₹${financeRepository.amountInWallet}")
             displayInDigitalWallet.postValue("₹${financeRepository.amountInDigitalWallet} in your digital wallet")
+            pBarVisibility.value = false
         }
     }
 
@@ -85,33 +87,49 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     fun makeExpense(paymentMode: String)
     {
-        toastShort(getApplication(),"Expense noted")
+        pBarVisibility.value = true
         viewModelScope.launch(Dispatchers.IO) {
             expenditureRepository.logExpense(purpose, payee, paymentMode, dateText.value.toString(), amount)
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            expenditureRepository.updateExpenseCount(amount)
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            val dateToMonthAndYear = dateText.value.toString().split("-")
+            val monthAndYear = dateToMonthAndYear[1].trim()+"-"+dateToMonthAndYear[2].trim()
+            expenditureRepository.updateMonthlyStatistics(monthAndYear, amount)
         }
 
         if(paymentMode == "Bank" || paymentMode == "Debit Card")
         {
             viewModelScope.launch(Dispatchers.IO) {
                 expenditureRepository.deductFromBank(amount)
+                pBarVisibility.value = false
+                liveMsg.value = "Expense noted"
             }
         }
         if(paymentMode == "Cash")
         {
             viewModelScope.launch(Dispatchers.IO) {
                 expenditureRepository.deductFromHand(amount)
+                pBarVisibility.value = false
+                liveMsg.value = "Expense noted"
             }
         }
         if(paymentMode == "Digital Wallet")
         {
             viewModelScope.launch(Dispatchers.IO) {
                 expenditureRepository.deductFromDigitalWallet(amount)
+                pBarVisibility.value = false
+                liveMsg.value = "Expense noted"
             }
         }
         if(paymentMode == "Credit Card")
         {
             viewModelScope.launch(Dispatchers.IO) {
                 expenditureRepository.addToCreditCardExpense(amount)
+                pBarVisibility.value = false
+                liveMsg.value = "Expense noted"
             }
         }
 

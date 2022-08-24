@@ -16,6 +16,8 @@ import com.example.financialassistant.databinding.FragmentFinanceBinding
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
+import utils.Common.setProgressDialog
+import utils.Common.toastLong
 import java.util.*
 
 class FinanceFragment : Fragment() {
@@ -30,10 +32,30 @@ class FinanceFragment : Fragment() {
         binding.lviewModel = viewModel
         binding.lifecycleOwner = this
 
+        val dialog = setProgressDialog(requireContext(), "Please wait..")
+
         lifecycleScope.launch {
             viewModel.loadFinanceData()
         }
 
+        lifecycleScope.launchWhenStarted {
+            viewModel.pBarVisibility.collectLatest {
+                if(it)
+                    dialog.show()
+                else
+                    dialog.dismiss()
+            }
+        }
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.liveMsg.collectLatest {
+                if(it != "")
+                {
+                    dialog.dismiss()
+                    reloadFragment(it)
+                }
+            }
+        }
 
         lifecycleScope.launchWhenStarted {
 
@@ -156,6 +178,13 @@ class FinanceFragment : Fragment() {
             imageView.setImageResource(R.drawable.collapse)
         else
             imageView.setImageResource(R.drawable.expand)
+    }
+
+    private fun reloadFragment(msg: String)
+    {
+        val transaction = parentFragmentManager.beginTransaction()
+        transaction.replace(R.id.frame_home, FinanceFragment()).commit()
+        toastLong(requireContext(), msg)
     }
 
 

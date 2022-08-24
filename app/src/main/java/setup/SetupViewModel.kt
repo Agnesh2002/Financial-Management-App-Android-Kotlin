@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import repositories.SetupRepository
+import utils.Common.auth
 
 class SetupViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -16,7 +17,7 @@ class SetupViewModel(application: Application) : AndroidViewModel(application) {
     var amountInDigitalWallet = ""
     var creditCardExpenditure = ""
     val errorMsg = "This field is required"
-    private val setupRepository = SetupRepository()
+    private val setupRepository = SetupRepository(auth.currentUser?.email!!)
     private val _stateFlow = MutableStateFlow(0)
     val stateFlowMsg = _stateFlow.asStateFlow()
 

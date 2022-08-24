@@ -11,9 +11,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import repositories.ExpenditureRepository
 import utils.Common
+import utils.Common.toastShort
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -55,7 +58,6 @@ class ExpenditureHistoryViewModel(application: Application) : AndroidViewModel(a
     fun getData()
     {
         viewModelScope.launch(Dispatchers.IO){
-
             expenditureRepository.getExpenseData()
             expenseListFromRepo.clear()
             for(expenseList in expenditureRepository.listOfExpenses)
@@ -65,6 +67,15 @@ class ExpenditureHistoryViewModel(application: Application) : AndroidViewModel(a
                     expenseListFromRepo.add(expense)
             }
             convertToListOfObjects()
+        }
+
+        viewModelScope.launch {
+            expenditureRepository.stateFlow.collectLatest {
+                withContext(Dispatchers.Main)
+                {
+                    toastShort(getApplication(), it)
+                }
+            }
         }
 
     }

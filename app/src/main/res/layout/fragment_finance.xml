@@ -2,6 +2,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
+        <import type="android.view.View"/>
         <variable
             name="lviewModel"
             type="finance.FinanceViewModel" />
@@ -17,6 +18,7 @@
         android:layout_height="match_parent">
 
         <ScrollView
+            android:id="@+id/scrollView2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginStart="8dp"
@@ -58,8 +60,8 @@
                                 android:layout_width="118dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="15dp"
-                                android:src="@drawable/bank"
-                                android:contentDescription="TODO" />
+                                android:contentDescription="TODO"
+                                android:src="@drawable/bank" />
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -93,8 +95,8 @@
                                     android:layout_width="40dp"
                                     android:layout_height="25dp"
                                     android:layout_marginTop="5dp"
-                                    android:src="@drawable/expand"
-                                    android:contentDescription="TODO" />
+                                    android:contentDescription="TODO"
+                                    android:src="@drawable/expand" />
                             </LinearLayout>
 
                         </LinearLayout>
@@ -124,7 +126,8 @@
                                     android:id="@+id/et_bank_update_amount"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:hint="@string/amount" />
+                                    android:hint="@string/amount"
+                                    android:inputType="numberDecimal" />
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <com.google.android.material.textfield.TextInputLayout
@@ -148,7 +151,8 @@
                                     android:id="@+id/et_credit_card_expense_update"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:hint="Credit card expense update (if any)" />
+                                    android:hint="Credit card expense update (if any)"
+                                    android:inputType="numberDecimal" />
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <TextView
@@ -197,8 +201,8 @@
                                 android:layout_width="118dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="15dp"
-                                android:src="@drawable/cashinhand"
-                                android:contentDescription="TODO" />
+                                android:contentDescription="TODO"
+                                android:src="@drawable/cashinhand" />
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -231,8 +235,8 @@
                                     android:layout_width="40dp"
                                     android:layout_height="25dp"
                                     android:layout_marginTop="5dp"
-                                    android:src="@drawable/expand"
-                                    android:contentDescription="TODO" />
+                                    android:contentDescription="TODO"
+                                    android:src="@drawable/expand" />
                             </LinearLayout>
 
                         </LinearLayout>
@@ -270,7 +274,8 @@
                                     android:id="@+id/et_amount_withdrawn_from_bank"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:hint="@string/amount_withdrawn_from_bank" />
+                                    android:hint="@string/amount_withdrawn_from_bank"
+                                    android:inputType="numberDecimal" />
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <com.google.android.material.textfield.TextInputLayout
@@ -282,7 +287,8 @@
                                     android:id="@+id/et_amount_added_to_digital_wallet"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:hint="Amount added to digital wallet" />
+                                    android:hint="Amount added to digital wallet"
+                                    android:inputType="numberDecimal" />
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <com.google.android.material.textfield.TextInputLayout
@@ -294,7 +300,8 @@
                                     android:id="@+id/et_amount_from_other_source"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:hint="@string/amount_received_from_other_source" />
+                                    android:hint="@string/amount_received_from_other_source"
+                                    android:inputType="numberDecimal" />
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <com.google.android.material.textfield.TextInputLayout
@@ -391,8 +398,8 @@
                                 android:layout_width="118dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="15dp"
-                                android:src="@drawable/money"
-                                android:contentDescription="TODO" />
+                                android:contentDescription="TODO"
+                                android:src="@drawable/money" />
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -430,6 +437,18 @@
 
             </LinearLayout>
         </ScrollView>
+
+<!--        <ProgressBar-->
+<!--            android:id="@+id/progressBarFinanceData"-->
+<!--            style="?android:attr/progressBarStyle"-->
+<!--            android:layout_width="103dp"-->
+<!--            android:layout_height="116dp"-->
+<!--            android:visibility="@{lviewModel.pBarVisibility?View.VISIBLE : View.GONE}"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintHorizontal_bias="0.5"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

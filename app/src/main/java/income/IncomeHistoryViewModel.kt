@@ -10,7 +10,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import repositories.FinanceRepository
 import utils.Common
 import java.text.SimpleDateFormat
@@ -62,6 +64,15 @@ class IncomeHistoryViewModel(application: Application) : AndroidViewModel(applic
                     incomeListFromRepo.add(expense)
             }
             convertToListOfObjects()
+        }
+
+        viewModelScope.launch {
+            financeRepository.stateFlow.collectLatest {
+                withContext(Dispatchers.Main)
+                {
+                    Common.toastShort(getApplication(), it)
+                }
+            }
         }
     }
 

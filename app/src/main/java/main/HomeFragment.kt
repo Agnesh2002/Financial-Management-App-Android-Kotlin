@@ -14,10 +14,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.example.financialassistant.R
 import com.example.financialassistant.databinding.FragmentHomeBinding
+import finance.FinanceFragment
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
+import utils.Common
 import utils.Common.toastShort
 import java.util.*
 
@@ -79,6 +83,27 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
         viewModel.loadData()
 
+        val dialog = Common.setProgressDialog(requireContext(), "Please wait..")
+        lifecycleScope.launchWhenStarted {
+            viewModel.pBarVisibility.collectLatest {
+                if(it)
+                    dialog.show()
+                else
+                    dialog.dismiss()
+            }
+        }
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.liveMsg.collectLatest {
+                if(it != "")
+                {
+                    dialog.dismiss()
+                    delay(500)
+                    reloadFragment(it)
+                }
+            }
+        }
+
         binding.imgContacts.setOnClickListener {
 
             if (!hasContactPermission()) {
@@ -129,6 +154,13 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             AppSettingsDialog.Builder(requireActivity()).build().show()
         else
             requestContactPermission()
+    }
+
+    private fun reloadFragment(msg: String)
+    {
+        val transaction = parentFragmentManager.beginTransaction()
+        transaction.replace(R.id.frame_home, HomeFragment()).commit()
+        toastShort(requireContext(), msg)
     }
 
 }

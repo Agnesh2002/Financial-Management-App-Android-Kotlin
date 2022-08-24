@@ -3,9 +3,8 @@ package repositories
 import utils.Common
 import utils.Common.collRef
 
-class SetupRepository {
+class SetupRepository(authEmail: String) {
 
-    var authEmail = ""
     val docRefData = collRef.document(authEmail).collection("FINANCE").document("DATA")
 
     fun resetBankBalance(amount: String)

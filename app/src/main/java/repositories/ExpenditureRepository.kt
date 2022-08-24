@@ -2,17 +2,23 @@ package repositories
 
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.orhanobut.logger.Logger
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.tasks.await
 import utils.Common
+import java.lang.Exception
 
 
 class ExpenditureRepository(val authEmail: String) {
 
     val listOfExpenses = arrayListOf<String>()
-    val docRefExpenditures = Common.collRef.document(authEmail).collection("FINANCE").document("EXPENDITURES")
-    val docRefData = Common.collRef.document(authEmail).collection("FINANCE").document("DATA")
-    val docRefStatistics = Common.collRef.document(authEmail).collection("FINANCE").document("STATISTICS")
-    val collRefMonthlyStatistics = Common.collRef.document(authEmail).collection("FINANCE").document("STATISTICS").collection("MONTHLY")
+    private val docRefExpenditures = Common.collRef.document(authEmail).collection("FINANCE").document("EXPENDITURES")
+    private val docRefData = Common.collRef.document(authEmail).collection("FINANCE").document("DATA")
+    private val docRefStatistics = Common.collRef.document(authEmail).collection("FINANCE").document("STATISTICS")
+    private val collRefMonthlyStatistics = Common.collRef.document(authEmail).collection("FINANCE").document("STATISTICS").collection("MONTHLY")
+
+    private val _stateFlowMsg = MutableStateFlow("")
+    val stateFlow = _stateFlowMsg.asStateFlow()
 
     suspend fun logExpense(purpose: String, payee: String, paymentMode: String, date: String, amount: String)
     {
@@ -20,11 +26,14 @@ class ExpenditureRepository(val authEmail: String) {
         val fieldName = authEmail.replace(".","_")+"-${Common.currentTime()}-$date".lowercase()
         val expenditureArray = arrayListOf(fieldName, date, paymentMode, payee, purpose, amount)
         data[fieldName] = expenditureArray
-        docRefExpenditures.update(data)
 
-        val dateToMonthAndYear = date.split("-")
-        val monthAndYear = dateToMonthAndYear[1].trim()+"-"+dateToMonthAndYear[2].trim()
-        updateExpenseCount(monthAndYear, amount)
+        if(!docRefExpenditures.get().await().exists())
+        {
+            docRefExpenditures.set(data).await()
+        }
+        else{
+            docRefExpenditures.update(data)
+        }
     }
 
     suspend fun getExpenseData()
@@ -35,7 +44,11 @@ class ExpenditureRepository(val authEmail: String) {
                 listOfExpenses.add(expense.toString())
         }
         catch (e: FirebaseFirestoreException) {
-            Logger.e(e.message.toString())
+            _stateFlowMsg.value = e.message.toString()
+        }
+        catch (e: Exception)
+        {
+            _stateFlowMsg.value = "No expenditure data available yet"
         }
     }
 
@@ -71,40 +84,36 @@ class ExpenditureRepository(val authEmail: String) {
         docRefData.update("credit_card_expenditure",newExpenditureByCreditCard.toString())
     }
 
-    private suspend fun updateExpenseCount(date: String, newAmount: String)
-    {
+    suspend fun updateExpenseCount(newAmount: String) {
         var expenditureCount = docRefStatistics.get().await().getLong("expenditure_count")!!
         expenditureCount += 1
-        docRefStatistics.update("expenditure_count",expenditureCount)
+        docRefStatistics.update("expenditure_count", expenditureCount)
 
         val amountValue = docRefStatistics.get().await().getLong("total_expenditure_amount")!!
-        val expenditureAmount = amountValue +  newAmount.toLong()
-        docRefStatistics.update("total_expenditure_amount",expenditureAmount)
+        val expenditureAmount = amountValue + newAmount.toLong()
+        docRefStatistics.update("total_expenditure_amount", expenditureAmount)
+    }
 
+    suspend fun updateMonthlyStatistics(date: String, newAmount: String)
+    {
         if(!collRefMonthlyStatistics.document(date).get().await().exists())
         {
             val data = HashMap<String,Any>()
-            data["total_expenditure_amount"] = 0
-            data["expenditure_count"] = 0
+            data["total_expenditure_amount"] = newAmount.toDouble()
+            data["expenditure_count"] = 1
             data["total_income_amount"] = 0
             data["income_count"] = 0
             collRefMonthlyStatistics.document(date).set(data).await()
-            updateMonthlyExpenditureStatistics(date, newAmount)
         }
         else{
-            updateMonthlyExpenditureStatistics(date, newAmount)
+            var monthlyExpenditureCount = collRefMonthlyStatistics.document(date).get().await().getLong("expenditure_count")!!
+            monthlyExpenditureCount += 1
+            collRefMonthlyStatistics.document(date).update("expenditure_count",monthlyExpenditureCount)
+
+            val monthlyAmountValue = collRefMonthlyStatistics.document(date).get().await().getLong("total_expenditure_amount")!!
+            val monthlyExpenditureAmount = monthlyAmountValue +  newAmount.toLong()
+            collRefMonthlyStatistics.document(date).update("total_expenditure_amount",monthlyExpenditureAmount)
         }
-    }
-
-    private suspend fun updateMonthlyExpenditureStatistics(date: String, newAmount: String)
-    {
-        var monthlyExpenditureCount = collRefMonthlyStatistics.document(date).get().await().getLong("expenditure_count")!!
-        monthlyExpenditureCount += 1
-        collRefMonthlyStatistics.document(date).update("expenditure_count",monthlyExpenditureCount)
-
-        val monthlyAmountValue = collRefMonthlyStatistics.document(date).get().await().getLong("total_expenditure_amount")!!
-        val monthlyExpenditureAmount = monthlyAmountValue +  newAmount.toLong()
-        collRefMonthlyStatistics.document(date).update("total_expenditure_amount",monthlyExpenditureAmount)
     }
 
 }

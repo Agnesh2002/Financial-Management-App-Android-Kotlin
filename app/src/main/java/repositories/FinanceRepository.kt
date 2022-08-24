@@ -1,9 +1,11 @@
 package repositories
 
 import com.google.firebase.firestore.FirebaseFirestoreException
-import com.orhanobut.logger.Logger
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.tasks.await
 import utils.Common
+import java.lang.Exception
 
 class FinanceRepository(val authEmail: String) {
 
@@ -13,12 +15,52 @@ class FinanceRepository(val authEmail: String) {
     var amountUsingCreditCard = 0.0
     var listOfIncomes = arrayListOf<String>()
 
-    val docRefIncomes = Common.collRef.document(authEmail).collection("FINANCE").document("INCOMES")
-    val docRefData = Common.collRef.document(authEmail).collection("FINANCE").document("DATA")
-    val docRefWithdraws = Common.collRef.document(authEmail).collection("FINANCE").document("WITHDRAWS")
-    val docRefTransfers = Common.collRef.document(authEmail).collection("FINANCE").document("TRANSFERS")
-    val docRefStatistics = Common.collRef.document(authEmail).collection("FINANCE").document("STATISTICS")
-    val collRefMonthlyStatistics = Common.collRef.document(authEmail).collection("FINANCE").document("STATISTICS").collection("MONTHLY")
+    private val docRefIncomes = Common.collRef.document(authEmail).collection("FINANCE").document("INCOMES")
+    private val docRefData = Common.collRef.document(authEmail).collection("FINANCE").document("DATA")
+    private val docRefWithdraws = Common.collRef.document(authEmail).collection("FINANCE").document("WITHDRAWS")
+    private val docRefTransfers = Common.collRef.document(authEmail).collection("FINANCE").document("TRANSFERS")
+    private val docRefStatistics = Common.collRef.document(authEmail).collection("FINANCE").document("STATISTICS")
+    private val collRefMonthlyStatistics = Common.collRef.document(authEmail).collection("FINANCE").document("STATISTICS").collection("MONTHLY")
+
+    private val _stateFlowMsg = MutableStateFlow("")
+    val stateFlow = _stateFlowMsg.asStateFlow()
+
+    private suspend fun logIncome(date: String, amount: String, source: String, incomeMode: String)
+    {
+        val data = HashMap<String,Any>()
+        val fieldName = authEmail.replace(".","_")+"-income-${Common.currentTime()}-$date".lowercase()
+        val incomeArray = arrayListOf(fieldName, date, amount, source, incomeMode)
+        data[fieldName] = incomeArray
+
+        if(!docRefIncomes.get().await().exists())
+        {
+            docRefIncomes.set(data).await()
+        }
+        else{
+            docRefIncomes.update(data)
+        }
+
+        val dateToMonthAndYear = date.split("-")
+        val monthAndYear = dateToMonthAndYear[1].trim()+"-"+dateToMonthAndYear[2].trim()
+        updateIncomeCount(amount)
+        updateMonthlyIncomeStatistics(monthAndYear, amount)
+    }
+
+    suspend fun getIncomeData()
+    {
+        try {
+            val result = docRefIncomes.get().await()
+            for (expense in result.data!!.values)
+                listOfIncomes.add(expense.toString())
+        }
+        catch (e: FirebaseFirestoreException) {
+            _stateFlowMsg.value = e.message.toString()
+        }
+        catch (e: Exception)
+        {
+            _stateFlowMsg.value = "No income data available yet"
+        }
+    }
 
     suspend fun getInHandBalance()
     {
@@ -39,19 +81,6 @@ class FinanceRepository(val authEmail: String) {
 
     }
 
-    private suspend fun logIncome(date: String, amount: String, source: String, incomeMode: String)
-    {
-        val data = HashMap<String,Any>()
-        val fieldName = authEmail.replace(".","_")+"-income-${Common.currentTime()}-$date".lowercase()
-        val incomeArray = arrayListOf(fieldName, date, amount, source, incomeMode)
-        data[fieldName] = incomeArray
-        docRefIncomes.update(data)
-
-        val dateToMonthAndYear = date.split("-")
-        val monthAndYear = dateToMonthAndYear[1].trim()+"-"+dateToMonthAndYear[2].trim()
-        updateIncomeCount(monthAndYear, amount)
-    }
-
     suspend fun updateBankBalance(date: String, amount: String, source: String, creditCardExpenseUpdate: String)
     {
         if(!(amount.isEmpty() || amount == "")) {
@@ -65,25 +94,39 @@ class FinanceRepository(val authEmail: String) {
         }
     }
 
-    fun updateBalanceCashInHand(date: String, amount: String)
+    suspend fun updateBalanceCashInHand(date: String, amount: String)
     {
         val data = HashMap<String,Any>()
         val fieldName = authEmail.replace(".","_")+"-withdraw-${Common.currentTime()}-$date".lowercase()
         val withdrawArray = arrayListOf(fieldName, date, amount)
         data[fieldName] = withdrawArray
-        docRefWithdraws.update(data)
+
+        if(!docRefWithdraws.get().await().exists())
+        {
+            docRefWithdraws.set(data).await()
+        }
+        else{
+            docRefWithdraws.update(data)
+        }
 
         amountInWallet += amount.toDouble()
         docRefData.update("in_wallet",amountInWallet.toString())
     }
 
-    fun updateBalanceInDigitalWallet(date: String, amount: String)
+    suspend fun updateBalanceInDigitalWallet(date: String, amount: String)
     {
         val data = HashMap<String,Any>()
         val fieldName = authEmail.replace(".","_")+"-transfer-${Common.currentTime()}-$date".lowercase()
         val transferArray = arrayListOf(fieldName, date, amount)
         data[fieldName] = transferArray
-        docRefTransfers.update(data)
+
+        if(!docRefTransfers.get().await().exists())
+        {
+            docRefTransfers.set(data).await()
+        }
+        else{
+            docRefTransfers.update(data)
+        }
 
         amountInDigitalWallet += amount.toDouble()
         docRefData.update("in_digital_wallet",amountInDigitalWallet.toString())
@@ -111,52 +154,35 @@ class FinanceRepository(val authEmail: String) {
         }
     }
 
-    private suspend fun updateIncomeCount(date: String, newAmount: String)
-    {
+    private suspend fun updateIncomeCount(newAmount: String) {
         var incomeCount = docRefStatistics.get().await().getLong("income_count")!!
         incomeCount += 1
-        docRefStatistics.update("income_count",incomeCount)
+        docRefStatistics.update("income_count", incomeCount)
 
         val amountValue = docRefStatistics.get().await().getLong("total_income_amount")!!
-        val incomeAmount = amountValue +  newAmount.toLong()
-        docRefStatistics.update("total_income_amount",incomeAmount)
+        val incomeAmount = amountValue + newAmount.toLong()
+        docRefStatistics.update("total_income_amount", incomeAmount)
+    }
 
+    private suspend fun updateMonthlyIncomeStatistics(date: String, newAmount: String)
+    {
         if(!collRefMonthlyStatistics.document(date).get().await().exists())
         {
             val data = HashMap<String,Any>()
             data["total_expenditure_amount"] = 0
             data["expenditure_count"] = 0
-            data["total_income_amount"] = 0
-            data["income_count"] = 0
+            data["total_income_amount"] = newAmount.toDouble()
+            data["income_count"] = 1
             collRefMonthlyStatistics.document(date).set(data)
-            updateMonthlyIncomeStatistics(date, newAmount)
         }
         else{
-            updateMonthlyIncomeStatistics(date, newAmount)
-        }
-    }
+            var monthlyIncomeCount = collRefMonthlyStatistics.document(date).get().await().getLong("income_count")!!
+            monthlyIncomeCount += 1
+            collRefMonthlyStatistics.document(date).update("income_count",monthlyIncomeCount)
 
-    private suspend fun updateMonthlyIncomeStatistics(date: String, newAmount: String)
-    {
-        var monthlyIncomeCount = collRefMonthlyStatistics.document(date).get().await().getLong("income_count")!!
-        monthlyIncomeCount += 1
-        collRefMonthlyStatistics.document(date).update("income_count",monthlyIncomeCount)
-
-        val monthlyAmountValue = collRefMonthlyStatistics.document(date).get().await().getLong("total_income_amount")!!
-        val monthlyIncomeAmount = monthlyAmountValue +  newAmount.toLong()
-        collRefMonthlyStatistics.document(date).update("total_income_amount",monthlyIncomeAmount)
-    }
-
-    suspend fun getIncomeData()
-    {
-        try {
-            val result = docRefIncomes.get().await()
-            for (expense in result.data!!.values)
-                listOfIncomes.add(expense.toString())
-        }
-        catch (e: FirebaseFirestoreException)
-        {
-            Logger.e(e.message.toString())
+            val monthlyAmountValue = collRefMonthlyStatistics.document(date).get().await().getLong("total_income_amount")!!
+            val monthlyIncomeAmount = monthlyAmountValue +  newAmount.toLong()
+            collRefMonthlyStatistics.document(date).update("total_income_amount",monthlyIncomeAmount)
         }
     }
 
