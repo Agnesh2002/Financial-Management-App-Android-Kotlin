@@ -6,36 +6,50 @@
             android:icon="@drawable/home_icon"
             android:id="@+id/nav_home"
             android:title="@string/home"/>
-        <item
-            android:id="@+id/nav_expenditure_history"
-            android:icon="@drawable/expenditure_history_icon"
-            android:title="@string/expenditure_history"/>
-
-        <item
-            android:id="@+id/nav_income_history"
-            android:icon="@drawable/income_history_icon"
-            android:title="Income History"/>
-
-        <item
-            android:id="@+id/nav_exchange_rate"
-            android:icon="@drawable/conversion_icon"
-            android:title="@string/exchange_rates"/>
-        <item
-            android:id="@+id/nav_finance"
-            android:icon="@drawable/finance_icon"
-            android:title="@string/finance"/>
-
-        <item
-            android:id="@+id/nav_statistics"
-            android:icon="@drawable/statistics_icon"
-            android:title="@string/statistics"/>
-
     </group>
+
+    <item
+        android:title="Records / History">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_expenditure_history"
+                    android:icon="@drawable/expenditure_history_icon"
+                    android:title="@string/expenditure_history"/>
+
+                <item
+                    android:id="@+id/nav_income_history"
+                    android:icon="@drawable/income_history_icon"
+                    android:title="Income History"/>
+            </group>
+        </menu>
+    </item>
+
+    <item
+        android:title="Your data">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_finance"
+                    android:icon="@drawable/finance_icon"
+                    android:title="@string/finance"/>
+
+                <item
+                    android:id="@+id/nav_statistics"
+                    android:icon="@drawable/statistics_icon"
+                    android:title="@string/statistics"/>
+            </group>
+        </menu>
+    </item>
 
     <item
         android:title="@string/other">
         <menu>
             <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_exchange_rate"
+                    android:icon="@drawable/conversion_icon"
+                    android:title="@string/exchange_rates"/>
                 <item
                     android:icon="@drawable/setup"
                     android:id="@+id/nav_setup"
@@ -53,7 +67,6 @@
                 android:title="Logout"/>
         </menu>
     </item>
-
 
 
 

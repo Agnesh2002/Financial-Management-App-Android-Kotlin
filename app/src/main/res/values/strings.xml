@@ -21,7 +21,7 @@
     <string name="username">Username</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="register">register</string>
-    <string name="home">Home</string>
+    <string name="home">Home (Note expense)</string>
     <string name="expenditure_history">Expenditure History</string>
     <string name="exchange_rates">Exchange Rates</string>
     <string name="finance">Finance</string>
