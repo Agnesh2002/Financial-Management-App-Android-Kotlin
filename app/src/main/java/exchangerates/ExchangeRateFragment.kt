@@ -28,6 +28,7 @@ class ExchangeRateFragment : Fragment() {
                 {
                     1-> { binding.etFromCurrency.error = viewModel.errorMsg }
                     2-> { binding.etToCurrency.error = viewModel.errorMsg }
+                    3-> { binding.etValueCurrency.error = viewModel.errorMsg }
                 }
             }
         }

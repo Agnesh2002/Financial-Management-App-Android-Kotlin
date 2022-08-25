@@ -25,6 +25,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import profile.ProfileFragment
 import setup.SetupFragment
 import statistics.StatisticsFragment
 import utils.Common
@@ -72,6 +73,7 @@ class HomeActivity : AppCompatActivity() {
                 R.id.nav_finance -> { fragmentChange(FinanceFragment()) }
                 R.id.nav_statistics -> { fragmentChange(StatisticsFragment()) }
                 R.id.nav_setup -> { fragmentChange(SetupFragment()) }
+                R.id.nav_profile -> { fragmentChange(ProfileFragment()) }
                 R.id.nav_logout -> { performLogout() }
             }
             true

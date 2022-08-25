@@ -48,6 +48,12 @@ class ExchangeRateViewModel(application: Application) : AndroidViewModel(applica
             pBarVisibility.value = false
             return
         }
+        if(value.value == "" || value.value.isEmpty())
+        {
+            _stateFlow.value = 3
+            pBarVisibility.value = false
+            return
+        }
         requestData()
     }
 
@@ -75,7 +81,6 @@ class ExchangeRateViewModel(application: Application) : AndroidViewModel(applica
         val tmp = toCurrency.value
         toCurrency.value = fromCurrency.value
         fromCurrency.value = tmp
-
     }
 
 }
