@@ -61,7 +61,6 @@ class MonthlyStatisticsFragment : Fragment() {
             }
             else
             {
-                mPieChart.clearChart()
                 binding.btnGetMonthlyStatistics.visibility = View.INVISIBLE
                 binding.tvStatisticsSelectMonthAndYear.isClickable = true
                 binding.tvStatisticsSelectMonthAndYear.text = "Select month and year"
@@ -71,6 +70,7 @@ class MonthlyStatisticsFragment : Fragment() {
 
         lifecycleScope.launchWhenStarted {
             viewModel.data.collectLatest {
+                mPieChart.clearChart()
                 binding.tvMonthlyExpenditureCount.text = it.expenditureCount.toString()
                 binding.tvMonthlyExpenditureAmount.text = "₹ ${it.expenditureAmountValue}"
 
@@ -79,16 +79,34 @@ class MonthlyStatisticsFragment : Fragment() {
 
                 Logger.w(it.expenditureAmountValue.toString())
 
-                mPieChart.isUseCustomInnerValue = true
-                mPieChart.addPieSlice(PieModel("Expenditure amount of ${viewModel.dateText.value} ",it.expenditureAmountValue.toFloat(), Color.RED))
-                mPieChart.addPieSlice(PieModel("Income amount of ${viewModel.dateText.value} ", it.incomeAmountValue.toFloat(), Color.GREEN))
+                val total = it.incomeAmountValue + it.expenditureAmountValue
+                val percentOfExpenditure = (it.expenditureAmountValue/total)*100
+                val percentOfIncome = (it.incomeAmountValue/total)*100
 
+                var roundedExpenditure = String.format("%.2f",percentOfExpenditure).toFloat()
+                var roundedIncome = String.format("%.2f",percentOfIncome).toFloat()
+
+                if(roundedExpenditure < 1)
+                    roundedExpenditure+=1
+                if(roundedIncome < 1)
+                    roundedIncome+=1
+                if(roundedExpenditure > 99)
+                    roundedExpenditure-=roundedIncome
+                if(roundedIncome > 99)
+                    roundedIncome-=roundedExpenditure
+
+                Logger.w("$roundedExpenditure || $roundedIncome")
+
+                mPieChart.addPieSlice(PieModel("Expenditure amount of ${viewModel.dateText.value} ",roundedExpenditure, Color.RED))
+                mPieChart.addPieSlice(PieModel("Income amount of ${viewModel.dateText.value} ", roundedIncome, Color.GREEN))
+                mPieChart.isUseCustomInnerValue = true
                 if(it.incomeCount.toString() == "0")
                     mPieChart.innerValueString = "₹ ${it.expenditureAmountValue}"
                 else if(it.expenditureCount.toString() == "0")
                     mPieChart.innerValueString = "₹ ${it.incomeAmountValue}"
                 else
-                    mPieChart.innerValueString = "Rotate Me"
+                    mPieChart.innerValueString = "Spin Me"
+
                 mPieChart.startAnimation()
 
                 mPieChart.setOnItemFocusChangedListener(object : IOnItemFocusChangedListener {

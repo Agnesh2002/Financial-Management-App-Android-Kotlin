@@ -8,8 +8,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.orhanobut.logger.Logger
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import repositories.ExpenditureRepository
@@ -92,10 +94,19 @@ class FinanceViewModel(application: Application) : AndroidViewModel(application)
         }
         if(!(amount.isEmpty() || amount == ""))
         {
-            viewModelScope.launch(Dispatchers.IO) {
-                financeRepository.getInBankBalance()
-                financeRepository.updateBankBalance(dateText.value.toString().trim(), amount.trim(), source.trim(), creditCardExpenseUpdate.trim())
-                _liveMsg.emit("${amount.trim()} has been added to bank balance. Bank balance has been updated")
+            val job = viewModelScope.async {
+                val task1 = async { financeRepository.getInBankBalance() }
+                val task2 = async { financeRepository.updateBankBalance(dateText.value.toString().trim(), amount.trim(), source.trim(), creditCardExpenseUpdate.trim()) }
+                val task3 = async { updateIncomeCount(amount) }
+                val task4 = async { logIncomeStatistics(amount) }
+                task1.await()
+                task2.await()
+                task3.await()
+                task4.await()
+                "${amount.trim()} has been added to bank balance. Bank balance has been updated"
+            }
+            viewModelScope.launch {
+                _liveMsg.emit(job.await())
                 pBarVisibility.value = false
             }
         }
@@ -120,31 +131,98 @@ class FinanceViewModel(application: Application) : AndroidViewModel(application)
         {
             viewModelScope.launch(Dispatchers.IO) {
                 expenditureRepository.deductFromBank(amountWithdrawnFromBank)
-                financeRepository.getInHandBalance()
-                financeRepository.updateBalanceCashInHand(dateText.value.toString(),amountWithdrawnFromBank)
-                _liveMsg.emit("${amountWithdrawnFromBank.trim()} withdrawal from bank has been noted. In Hand balance has been updated")
-                pBarVisibility.value = false
+            }
+            viewModelScope.launch {
+                expenditureRepository.stateFlow.collectLatest {
+                    if(it == "")
+                    {
+                        return@collectLatest
+                    }
+                    if(it.contains("Insufficient"))
+                    {
+                        _liveMsg.emit(it)
+                        pBarVisibility.value = false
+                    }
+                    else
+                    {
+                        changeBalanceInCash(amountWithdrawnFromBank)
+                    }
+                }
             }
         }
         if(!(amountAddedToDigitalWallet.isEmpty() || amountAddedToDigitalWallet == ""))
         {
             viewModelScope.launch(Dispatchers.IO) {
                 expenditureRepository.deductFromBank(amountAddedToDigitalWallet)
-                financeRepository.getInHandBalance()
-                financeRepository.updateBalanceInDigitalWallet(dateText.value.toString(), amountAddedToDigitalWallet)
-                _liveMsg.emit("${amountAddedToDigitalWallet.trim()} addition to your digital wallet has been noted. Balance has been updated")
-                pBarVisibility.value = false
+            }
+            viewModelScope.launch {
+                expenditureRepository.stateFlow.collectLatest {
+                    if(it == "")
+                    {
+                        return@collectLatest
+                    }
+                    if(it.contains("Insufficient"))
+                    {
+                        _liveMsg.emit(it)
+                        pBarVisibility.value = false
+                    }
+                    else
+                    {
+                        changeBalanceInDigitalWallet(amountAddedToDigitalWallet)
+                    }
+                }
             }
         }
         if(!(amountFromOtherSource.isEmpty() || amountFromOtherSource == ""))
         {
-            viewModelScope.launch(Dispatchers.IO) {
-                financeRepository.getInHandBalance()
-                financeRepository.updateOtherSourceIncome(dateText.value.toString(), amountFromOtherSource, incomeOtherSource, incomeModeList[itemPosition])
-                _liveMsg.emit("${amountFromOtherSource.trim()} from ${incomeOtherSource.trim()} has been noted. Balance has been updated")
+            val job = viewModelScope.async {
+                val task1 = async { financeRepository.getInBankBalance() }
+                val task2 = async { financeRepository.updateOtherSourceIncome(dateText.value.toString(), amountFromOtherSource, incomeOtherSource, incomeModeList[itemPosition]) }
+                val task3 = async { updateIncomeCount(amountFromOtherSource) }
+                val task4 = async { logIncomeStatistics(amountFromOtherSource) }
+                task1.await()
+                task2.await()
+                task3.await()
+                task4.await()
+                "${amountFromOtherSource.trim()} has been added to bank balance. Bank balance has been updated"
+            }
+            viewModelScope.launch {
+                _liveMsg.emit(job.await())
                 pBarVisibility.value = false
             }
         }
+    }
+
+    private fun changeBalanceInCash(amountWithdrawnFromBank: String)
+    {
+        viewModelScope.launch(Dispatchers.IO) {
+            financeRepository.getInHandBalance()
+            financeRepository.updateBalanceCashInHand(dateText.value.toString(),amountWithdrawnFromBank)
+            _liveMsg.emit("${amountWithdrawnFromBank.trim()} withdrawal from bank has been noted. In Hand balance has been updated")
+            pBarVisibility.value = false
+        }
+    }
+
+    private fun changeBalanceInDigitalWallet(amountAddedToDigitalWallet: String)
+    {
+        viewModelScope.launch(Dispatchers.IO) {
+            financeRepository.getInHandBalance()
+            financeRepository.updateBalanceInDigitalWallet(dateText.value.toString(), amountAddedToDigitalWallet)
+            _liveMsg.emit("${amountAddedToDigitalWallet.trim()} addition to your digital wallet has been noted. Balance has been updated")
+            pBarVisibility.value = false
+        }
+    }
+
+    private suspend fun updateIncomeCount(amount: String)
+    {
+        financeRepository.updateIncomeCount(amount)
+    }
+
+    private suspend fun logIncomeStatistics(amount: String)
+    {
+        val dateToMonthAndYear = dateText.value.toString().split("-")
+        val monthAndYear = dateToMonthAndYear[1].trim()+"-"+dateToMonthAndYear[2].trim()
+        financeRepository.updateMonthlyIncomeStatistics(monthAndYear,amount)
     }
 
 }

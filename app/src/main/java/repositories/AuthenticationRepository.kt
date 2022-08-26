@@ -84,5 +84,16 @@ class AuthenticationRepository {
         _stateFlow.value = "Logout successful"
     }
 
+    suspend fun resetPassword(etEmail: String)
+    {
+        try {
+            auth.sendPasswordResetEmail(etEmail).await()
+            _stateFlow.value = "Password reset link has been sent to your registered e-mail id"
+        }
+        catch (e: FirebaseAuthException) {
+            _stateFlow.value = e.message.toString()
+        }
+
+    }
 
 }

@@ -6,15 +6,20 @@ import android.widget.ArrayAdapter
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.orhanobut.logger.Logger
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import repositories.AuthenticationRepository
 import repositories.ExpenditureRepository
 import repositories.FinanceRepository
 import utils.Common
 import utils.Common.auth
+import utils.Common.setUpLogger
 import utils.Common.toastShort
 import java.text.SimpleDateFormat
 import java.util.*
@@ -88,16 +93,33 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     fun makeExpense(paymentMode: String)
     {
         pBarVisibility.value = true
+
+        setUpLogger()
         viewModelScope.launch(Dispatchers.IO) {
-            expenditureRepository.logExpense(purpose, payee, paymentMode, dateText.value.toString(), amount)
-        }
-        viewModelScope.launch(Dispatchers.IO) {
-            expenditureRepository.updateExpenseCount(amount)
-        }
-        viewModelScope.launch(Dispatchers.IO) {
-            val dateToMonthAndYear = dateText.value.toString().split("-")
-            val monthAndYear = dateToMonthAndYear[1].trim()+"-"+dateToMonthAndYear[2].trim()
-            expenditureRepository.updateMonthlyStatistics(monthAndYear, amount)
+            expenditureRepository.stateFlow.collectLatest {
+                Logger.w(it)
+                if(it == "") {
+                    return@collectLatest
+                }
+                if(it.contains("Insufficient"))
+                {
+                    liveMsg.value = it
+                }
+                else
+                {
+                    val job = viewModelScope.async {
+                        val task1 = async { logExpense(paymentMode) }
+                        val task2 = async { updateExpenseCount() }
+                        val task3 = async { logExpenditureStatistics() }
+                        task1.await()
+                        task2.await()
+                        task3.await()
+                        "Expense noted"
+                    }
+
+                    liveMsg.value = job.await()
+                }
+            }
         }
 
         if(paymentMode == "Bank" || paymentMode == "Debit Card")
@@ -105,7 +127,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             viewModelScope.launch(Dispatchers.IO) {
                 expenditureRepository.deductFromBank(amount)
                 pBarVisibility.value = false
-                liveMsg.value = "Expense noted"
             }
         }
         if(paymentMode == "Cash")
@@ -113,7 +134,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             viewModelScope.launch(Dispatchers.IO) {
                 expenditureRepository.deductFromHand(amount)
                 pBarVisibility.value = false
-                liveMsg.value = "Expense noted"
             }
         }
         if(paymentMode == "Digital Wallet")
@@ -121,7 +141,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             viewModelScope.launch(Dispatchers.IO) {
                 expenditureRepository.deductFromDigitalWallet(amount)
                 pBarVisibility.value = false
-                liveMsg.value = "Expense noted"
             }
         }
         if(paymentMode == "Credit Card")
@@ -129,10 +148,26 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             viewModelScope.launch(Dispatchers.IO) {
                 expenditureRepository.addToCreditCardExpense(amount)
                 pBarVisibility.value = false
-                liveMsg.value = "Expense noted"
             }
         }
 
+    }
+
+    private suspend fun logExpense(paymentMode: String)
+    {
+        expenditureRepository.logExpense(purpose, payee, paymentMode, dateText.value.toString(), amount)
+    }
+
+    private suspend fun updateExpenseCount()
+    {
+        expenditureRepository.updateExpenseCount(amount)
+    }
+
+    private suspend fun logExpenditureStatistics()
+    {
+        val dateToMonthAndYear = dateText.value.toString().split("-")
+        val monthAndYear = dateToMonthAndYear[1].trim()+"-"+dateToMonthAndYear[2].trim()
+        expenditureRepository.updateMonthlyStatistics(monthAndYear, amount)
     }
 
 }

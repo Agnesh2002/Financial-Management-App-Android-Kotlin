@@ -101,6 +101,20 @@ class AuthenticationViewModel(application: Application) : AndroidViewModel(appli
         }
     }
 
+    fun forgotPassword()
+    {
+        etEmail = etEmail.trim()
+        if(etEmail.isEmpty() || etEmail == "")
+        {
+            _stateFlowMsg.value = 2
+            return
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            authenticationRepository.resetPassword(etEmail)
+            startObserving()
+        }
+    }
+
     fun getDisplayInfo()
     {
         viewModelScope.launch(Dispatchers.IO) {

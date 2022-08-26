@@ -56,24 +56,51 @@ class ExpenditureRepository(val authEmail: String) {
     {
         val amountValue = amount.toDouble()
         val balInBank = docRefData.get().await().get("in_bank")
-        val newBankVal = balInBank!!.toString().toDouble() - amountValue
-        docRefData.update("in_bank",newBankVal.toString())
+        val sBalInBank = balInBank.toString()
+        if(sBalInBank == "0")
+        {
+            _stateFlowMsg.value = "Insufficient balance in your bank"
+        }
+        else
+        {
+            val newBankVal = sBalInBank.toDouble() - amountValue
+            docRefData.update("in_bank",newBankVal.toString())
+            _stateFlowMsg.value = "Success"
+        }
     }
 
     suspend fun deductFromHand(amount: String)
     {
         val amountValue = amount.toDouble()
         val balInWallet = docRefData.get().await().get("in_wallet")
-        val newBalInWallet = balInWallet!!.toString().toDouble() - amountValue
-        docRefData.update("in_wallet",newBalInWallet.toString())
+        val sBalInWallet = balInWallet.toString()
+        if(sBalInWallet == "0")
+        {
+            _stateFlowMsg.value = "Insufficient balance in your wallet"
+        }
+        else
+        {
+            val newBalInWallet = sBalInWallet.toDouble() - amountValue
+            docRefData.update("in_wallet",newBalInWallet.toString())
+            _stateFlowMsg.value = "Success"
+        }
     }
 
     suspend fun deductFromDigitalWallet(amount: String)
     {
         val amountValue = amount.toDouble()
         val balInDigitalWallet = docRefData.get().await().get("in_digital_wallet")
-        val newBalInDigitalWallet = balInDigitalWallet!!.toString().toDouble() - amountValue
-        docRefData.update("in_digital_wallet",newBalInDigitalWallet.toString())
+        val sBalInDigitalWallet = balInDigitalWallet.toString()
+        if(sBalInDigitalWallet == "0")
+        {
+            _stateFlowMsg.value = "Insufficient balance in your wallet"
+        }
+        else
+        {
+            val newBalInDigitalWallet = sBalInDigitalWallet.toDouble() - amountValue
+            docRefData.update("in_digital_wallet",newBalInDigitalWallet.toString())
+            _stateFlowMsg.value = "Success"
+        }
     }
 
     suspend fun addToCreditCardExpense(amount: String)

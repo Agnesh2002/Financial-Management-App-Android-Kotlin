@@ -64,8 +64,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="@string/remember_me"
                 android:checked="@={lViewModel.checkBoxState}"
+                android:text="@string/remember_me"
                 app:layout_constraintEnd_toEndOf="@+id/etPassword"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/etPassword"
@@ -88,15 +88,15 @@
                 android:id="@+id/tv_register"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
                 android:layout_marginBottom="32dp"
+                android:fontFamily="@font/poppins_medium"
                 android:text="@string/do_not_have_an_account_click_here_to_register_now"
+                android:textColor="#1D49CF"
+                android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.229"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btn_login"
-                app:layout_constraintVertical_bias="0.877" />
+                app:layout_constraintEnd_toEndOf="@+id/tv_forgot_password"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/tv_forgot_password" />
 
             <ProgressBar
                 android:id="@+id/progressBar"
@@ -122,6 +122,20 @@
                 app:layout_constraintStart_toStartOf="@+id/etPassword"
                 app:layout_constraintTop_toTopOf="@+id/etPassword"
                 tools:srcCompat="@drawable/ic_baseline_remove_red_eye_24" />
+
+            <TextView
+                android:id="@+id/tv_forgot_password"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="@font/poppins_medium"
+                android:text="Forgot password ?"
+                android:textColor="#CF0101"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toTopOf="@+id/tv_register"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.09"
+                app:layout_constraintStart_toStartOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

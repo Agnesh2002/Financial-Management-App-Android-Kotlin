@@ -16,6 +16,8 @@ import kotlinx.coroutines.launch
 import org.eazegraph.lib.communication.IOnItemFocusChangedListener
 import org.eazegraph.lib.models.PieModel
 import utils.Common.setUpLogger
+import utils.Common.toastShort
+import kotlin.math.roundToInt
 
 class WholeStatisticsFragment : Fragment() {
 
@@ -32,42 +34,59 @@ class WholeStatisticsFragment : Fragment() {
         val mPieChart = binding.piechart
 
         lifecycleScope.launch {
-            mPieChart.clearChart()
             viewModel.getWholeStatistics()
         }
 
         lifecycleScope.launchWhenStarted {
             viewModel.data.collectLatest {
-
+                mPieChart.clearChart()
                 binding.tvWholeExpenditureCount.text = it.expenditureCount.toString()
                 binding.tvWholeExpenditureAmount.text = "₹ ${it.expenditureAmountValue}"
 
                 binding.tvWholeIncomeCount.text = it.incomeCount.toString()
                 binding.tvWholeIncomeAmount.text = "₹ ${it.incomeAmountValue}"
 
-                mPieChart.isUseCustomInnerValue = true
-                mPieChart.addPieSlice(PieModel("Total expenditure amount",it.expenditureAmountValue.toFloat(), Color.RED))
-                mPieChart.addPieSlice(PieModel("Total income amount", it.incomeAmountValue.toFloat(), Color.GREEN))
+                val total = it.incomeAmountValue + it.expenditureAmountValue
+                val percentOfExpenditure = (it.expenditureAmountValue/total)*100
+                val percentOfIncome = (it.incomeAmountValue/total)*100
 
+                var roundedExpenditure = String.format("%.2f",percentOfExpenditure).toFloat()
+                var roundedIncome = String.format("%.2f",percentOfIncome).toFloat()
+
+                if(roundedExpenditure < 1)
+                    roundedExpenditure+=1
+                if(roundedIncome < 1)
+                    roundedIncome+=1
+                if(roundedExpenditure > 99)
+                    roundedExpenditure-=roundedIncome
+                if(roundedIncome > 99)
+                    roundedIncome-=roundedExpenditure
+
+
+                mPieChart.addPieSlice(PieModel("Total expenditure amount",roundedExpenditure, Color.RED))
+                mPieChart.addPieSlice(PieModel("Total income amount", roundedIncome, Color.GREEN))
+                mPieChart.isUseCustomInnerValue = true
                 if(it.incomeCount.toString() == "0")
                     mPieChart.innerValueString = "₹ ${it.expenditureAmountValue}"
                 else if(it.expenditureCount.toString() == "0")
                     mPieChart.innerValueString = "₹ ${it.incomeAmountValue}"
                 else
-                    mPieChart.innerValueString = "Rotate Me"
+                    mPieChart.innerValueString = "Spin Me"
+
                 mPieChart.startAnimation()
 
                 mPieChart.setOnItemFocusChangedListener(object : IOnItemFocusChangedListener {
                     override fun onItemFocusChanged(_Position: Int) {
                         when(_Position)
                         {
-                            3-> { mPieChart.innerValueString = "₹ ${it.incomeAmountValue}" }
-                            2-> { mPieChart.innerValueString = "₹ ${it.expenditureAmountValue}" }
+                            1-> { mPieChart.innerValueString = "₹ ${it.incomeAmountValue}" }
+                            0-> { mPieChart.innerValueString = "₹ ${it.expenditureAmountValue}" }
                         }
                     }
                 })
             }
         }
+
 
         return binding.root
     }

@@ -79,6 +79,10 @@ class LoginFragment : Fragment() {
             }
         }
 
+        binding.tvForgotPassword.setOnClickListener {
+            viewModel.forgotPassword()
+        }
+
         return binding.root
     }
 

@@ -3,9 +3,10 @@ package statistics
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import utils.Common.auth
 import utils.Common.toastShort
@@ -22,28 +23,33 @@ class StatisticsViewModel(application: Application) : AndroidViewModel(applicati
 
     suspend fun getWholeStatistics()
     {
-        val job1 = viewModelScope.launch(Dispatchers.IO) {
-            statisticsRepository.getWholeExpenditure()
+        val job = viewModelScope.async {
+            val task1 = async { statisticsRepository.getWholeExpenditure() }
+            task1.join()
+            val task2 = async { statisticsRepository.getWholeIncome() }
+            task2.join()
+            statisticsRepository.obj
         }
-        val job2 = viewModelScope.launch(Dispatchers.IO) {
-            statisticsRepository.getWholeIncome()
-        }
-        job1.join()
-        job2.join()
-        _data.value = statisticsRepository.obj
+        _data.value = job.await()
     }
 
     suspend fun getMonthlyStatistics(monthAndYear: String)
     {
-        val job1 = viewModelScope.launch(Dispatchers.IO) {
-            statisticsRepository.getMonthlyExpenditure(monthAndYear)
+        val job = viewModelScope.async {
+            val task1 = async { statisticsRepository.getMonthlyExpenditure(monthAndYear) }
+            task1.join()
+            val task2 = async { statisticsRepository.getMonthlyIncome(monthAndYear) }
+            task2.join()
+            statisticsRepository.obj
         }
-        val job2 = viewModelScope.launch(Dispatchers.IO) {
-            statisticsRepository.getMonthlyIncome(monthAndYear)
+        _data.value = job.await()
+
+        viewModelScope.launch {
+            statisticsRepository.stateFlowMsg.collectLatest {
+                if(it!="")
+                    toastShort(getApplication(), it)
+            }
         }
-        job1.join()
-        job2.join()
-        _data.value = statisticsRepository.obj
     }
 
 }

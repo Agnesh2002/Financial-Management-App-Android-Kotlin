@@ -42,8 +42,6 @@ class FinanceRepository(val authEmail: String) {
 
         val dateToMonthAndYear = date.split("-")
         val monthAndYear = dateToMonthAndYear[1].trim()+"-"+dateToMonthAndYear[2].trim()
-        updateIncomeCount(amount)
-        updateMonthlyIncomeStatistics(monthAndYear, amount)
     }
 
     suspend fun getIncomeData()
@@ -154,7 +152,7 @@ class FinanceRepository(val authEmail: String) {
         }
     }
 
-    private suspend fun updateIncomeCount(newAmount: String) {
+    suspend fun updateIncomeCount(newAmount: String) {
         var incomeCount = docRefStatistics.get().await().getLong("income_count")!!
         incomeCount += 1
         docRefStatistics.update("income_count", incomeCount)
@@ -164,7 +162,7 @@ class FinanceRepository(val authEmail: String) {
         docRefStatistics.update("total_income_amount", incomeAmount)
     }
 
-    private suspend fun updateMonthlyIncomeStatistics(date: String, newAmount: String)
+    suspend fun updateMonthlyIncomeStatistics(date: String, newAmount: String)
     {
         if(!collRefMonthlyStatistics.document(date).get().await().exists())
         {
