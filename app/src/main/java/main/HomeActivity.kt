@@ -28,9 +28,11 @@ import kotlinx.coroutines.withContext
 import profile.ProfileFragment
 import setup.SetupFragment
 import statistics.StatisticsFragment
+import transfers.TransferHistoryFragment
 import utils.Common
 import utils.Common.setUpLogger
 import utils.Common.toastShort
+import withdraws.WithdrawHistoryFragment
 
 
 class HomeActivity : AppCompatActivity() {
@@ -70,6 +72,8 @@ class HomeActivity : AppCompatActivity() {
                 R.id.nav_exchange_rate -> { fragmentChange(ExchangeRateFragment()) }
                 R.id.nav_expenditure_history -> { fragmentChange(ExpenditureHistoryFragment()) }
                 R.id.nav_income_history -> { fragmentChange(IncomeHistoryFragment()) }
+                R.id.nav_withdraw_history -> { fragmentChange(WithdrawHistoryFragment()) }
+                R.id.nav_transfer_history -> { fragmentChange(TransferHistoryFragment()) }
                 R.id.nav_finance -> { fragmentChange(FinanceFragment()) }
                 R.id.nav_statistics -> { fragmentChange(StatisticsFragment()) }
                 R.id.nav_setup -> { fragmentChange(SetupFragment()) }

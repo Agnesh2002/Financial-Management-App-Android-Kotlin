@@ -21,6 +21,16 @@
                     android:id="@+id/nav_income_history"
                     android:icon="@drawable/income_history_icon"
                     android:title="Income History"/>
+
+                <item
+                    android:id="@+id/nav_withdraw_history"
+                    android:icon="@drawable/withdraw_ico"
+                    android:title="Withdraw History"/>
+
+                <item
+                    android:id="@+id/nav_transfer_history"
+                    android:icon="@drawable/transfer_ico"
+                    android:title="Transfer History (to digital wallet)"/>
             </group>
         </menu>
     </item>

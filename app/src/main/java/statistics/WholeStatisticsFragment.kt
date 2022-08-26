@@ -87,7 +87,6 @@ class WholeStatisticsFragment : Fragment() {
             }
         }
 
-
         return binding.root
     }
 
