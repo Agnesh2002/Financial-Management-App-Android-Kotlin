@@ -4,10 +4,12 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.room.Room
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import repositories.AuthenticationRepository
+import utils.database.Database
 
 class AuthenticationViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -22,8 +24,17 @@ class AuthenticationViewModel(application: Application) : AndroidViewModel(appli
     var pBarVisibility = MutableLiveData<Boolean>()
     private val _sharedFlow = MutableSharedFlow<String>()
     val sharedFlow = _sharedFlow.asSharedFlow()
-
+    private var db: Database? =null
+    var dbData: MutableLiveData<Boolean> = MutableLiveData()
     var checkBoxState = MutableStateFlow(false)
+
+    fun checkForLogin()
+    {
+        viewModelScope.launch(Dispatchers.Default) {
+            db = Room.databaseBuilder(getApplication(), Database::class.java, "userdb").build()
+            dbData.postValue(db?.accessDao()!!.getData())
+        }
+    }
 
     private fun validate(): Boolean
     {
